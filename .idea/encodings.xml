@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="ISO-8859-1">
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/Main.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/annotation/ServiceScan.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/annotation/ServiceScannerRegistrar.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/bolt/DispatchBolt.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/proxy/ServiceMethod.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/proxy/ServiceProxy.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/proxy/ServiceProxyFactory.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/rpc/RpcHandle.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/rpc/drpc/DrpcAutoconfig.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/rpc/drpc/DrpcRequest.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/rpc/drpc/DrpcResponse.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/rpc/drpc/StormLocalDrpcHandle.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/rpc/drpc/StormRemoteDrpcHandle.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/spring/ClassPathServiceScanner.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/spring/MyBeanDefinitionRegistryPostProcessor.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/spring/ServiceFactoryBean.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/zrk1000/drpc/spring/ServiceScannerConfigurer.java" charset="UTF-8" />
+    <file url="PROJECT" charset="ISO-8859-1" />
+  </component>
+</project>
