@@ -16,8 +16,8 @@ import java.util.Map;
 /**
  * Created by rongkang on 2017-04-02.
  */
-@Profile("prod")
-@Component("stormRemoteDrpcHandle")
+//@Profile("prod")
+//@Component("stormRemoteDrpcHandle")
 public class StormRemoteDrpcHandle implements RpcHandle {
 
     private DRPCClient drpc ;
