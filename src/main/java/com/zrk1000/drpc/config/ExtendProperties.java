@@ -1,6 +1,8 @@
 package com.zrk1000.drpc.config;
 
-import java.util.Properties;
+import java.util.*;
+
+import static java.io.File.separator;
 
 /**
  * Created by zrk-PC on 2017/4/13.
@@ -44,5 +46,25 @@ public class ExtendProperties extends Properties {
         return (val == null) ?   new String[]{}:val.split(separator) ;
     }
 
+    public Map<String ,String > getSubProperty(String prefix,boolean removeThePrefix) {
+        Map<String ,String > map = new HashMap<String, String>();
+        Set<Object> set = this.keySet();
+        for (Object key : set)
+            if(key.toString().startsWith(prefix))
+                map.put(removeThePrefix?key.toString().substring(prefix.length()):key.toString(),
+                        this.get(key)!=null?this.get(key).toString():"");
+        return  map;
+    }
+
+    public Map<String ,Set<String> > getSubPropertyValueToSet(String prefix,boolean removeThePrefix) {
+        Map<String ,Set<String> >  result = new HashMap<String, Set<String>>();
+        Map<String, String> subProperty = getSubProperty(prefix, removeThePrefix);
+        for (String key :subProperty.keySet()){
+            String vaule = subProperty.get(key);
+            String[] split = vaule.split(",");
+            result.put(key,new HashSet<String>(Arrays.asList(split)));
+        }
+        return  result;
+    }
 
 }
