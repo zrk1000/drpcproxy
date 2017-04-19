@@ -7,8 +7,6 @@ import com.zrk1000.drpc.rpc.RpcHandle;
 import org.apache.storm.shade.com.google.common.collect.Maps;
 import org.apache.storm.thrift.transport.TTransportException;
 import org.apache.storm.utils.DRPCClient;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,8 +14,8 @@ import java.util.Map;
 /**
  * Created by rongkang on 2017-04-02.
  */
-@Profile("prod")
-@Component("stormRemoteDrpcHandle")
+//@Profile("prod")
+//@Component("stormRemoteDrpcHandle")
 public class StormRemoteDrpcHandle implements RpcHandle {
 
     private DRPCClient drpc ;

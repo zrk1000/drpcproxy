@@ -1,7 +1,7 @@
 package com.zrk1000.drpc;
 
 import com.zrk1000.drpc.bolt.DispatchBolt;
-import com.zrk1000.drpc.config.DrpcProperties;
+import com.zrk1000.drpc.config.ExtendProperties;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.drpc.DRPCSpout;
@@ -25,8 +25,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        DrpcProperties pps = new DrpcProperties();
         try {
+            ExtendProperties pps = new ExtendProperties();
             pps.load( Main.class.getResourceAsStream("classpath*:drpcproxy.properties"));
 
             String[] packages = pps.getStringArrayProperty("spring.bean.packages");

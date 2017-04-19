@@ -5,7 +5,7 @@ import java.util.Properties;
 /**
  * Created by zrk-PC on 2017/4/13.
  */
-public class DrpcProperties extends Properties {
+public class ExtendProperties extends Properties {
 
 
     public int getIntProperty(String key) {
@@ -36,12 +36,12 @@ public class DrpcProperties extends Properties {
 
     public String[] getStringArrayProperty(String key) {
         String val = getProperty(key);
-        return (val == null) ?  val.split(",") : new String[]{};
+        return (val == null) ?  new String[]{}: val.split(",") ;
     }
 
     public String[] getStringArrayProperty(String key,String separator) {
         String val = getProperty(key);
-        return (val == null) ?  val.split(separator) : new String[]{};
+        return (val == null) ?   new String[]{}:val.split(separator) ;
     }
 
 
