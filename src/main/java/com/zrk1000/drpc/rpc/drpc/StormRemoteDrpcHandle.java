@@ -6,6 +6,8 @@ import com.zrk1000.drpc.Main;
 import com.zrk1000.drpc.config.ExtendProperties;
 import com.zrk1000.drpc.proxy.ServiceMethod;
 import com.zrk1000.drpc.rpc.RpcHandle;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.storm.Config;
 import org.apache.storm.thrift.transport.TTransportException;
 import org.apache.storm.utils.DRPCClient;
@@ -17,50 +19,37 @@ import java.util.Set;
 /**
  * Created by rongkang on 2017-04-02.
  */
-//@Profile("prod")
-//@Component("stormRemoteDrpcHandle")
 public class StormRemoteDrpcHandle implements RpcHandle {
 
-    private DRPCClient drpc ;
+
+    private GenericObjectPool<DRPCClient> drpcClientPool ;
 
     private Map<String,Set<String>> drpcServiceMap ;
 
-    public StormRemoteDrpcHandle() {
-        try {
-            Config config = new Config();
-            ExtendProperties pps = new ExtendProperties();
-            pps.load( Main.class.getResourceAsStream("classpath*:drpcproxy-consumer.properties"));
-            config.putAll(pps.getSubProperty("drpcproxy.",true));
-            String stormHost = pps.getProperty("strom.host");
-            Integer stormPort = pps.getIntProperty("strom.port");
-            Integer stormTimeout = pps.getIntProperty("strom.timeout");
-
-            this.drpc = new DRPCClient(pps,stormHost,stormPort,stormTimeout);
-            this.drpcServiceMap = pps.getSubPropertyValueToSet("drpcspout.", true);
-        } catch (TTransportException e) {
-            e.printStackTrace();
-            throw new RuntimeException("初始化 StormRemoteDrpcHandle 失败,请检查配置");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("初始化 StormRemoteDrpcHandle 失败 ,读取配置文件错误");
-        }
-
+    public StormRemoteDrpcHandle(Config conf, String stormHost, Integer stormPort,Integer stormTimeout,GenericObjectPoolConfig poolConfig,Map<String,Set<String>> drpcServiceMap) {
+        DrpcClientFactory factory = new DrpcClientFactory(conf, stormHost, stormPort, stormTimeout);
+        this.drpcClientPool = new GenericObjectPool<DRPCClient>(factory,poolConfig);
+        this.drpcServiceMap = drpcServiceMap;
     }
 
     public Object exec(ServiceMethod serviceMethod, Object[] args) {
-        DrpcResponse drpcResponse = new DrpcResponse();
+        DRPCClient client = null;
         String result = null;
+        DrpcResponse drpcResponse = new DrpcResponse();
         try{
+            drpcClientPool.borrowObject();
             String drpcService = getDrpcService(serviceMethod.getClazz());
             if(drpcResponse == null)
                 throw  new RuntimeException("未匹配到的远程drpc，请检查配置");
-            result = drpc.execute(drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
+            result = client.execute(drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
             if(result!=null)
                 drpcResponse = JSON.parseObject(result, DrpcResponse.class);
         }catch (Exception e){
             e.printStackTrace();
             drpcResponse.setCode(500);
             drpcResponse.setMsg(e.getMessage());
+        }finally {
+            drpcClientPool.returnObject(client);
         }
 
         return JSONObject.parseObject(JSON.toJSONString(drpcResponse.getData()), serviceMethod.getReturnType());

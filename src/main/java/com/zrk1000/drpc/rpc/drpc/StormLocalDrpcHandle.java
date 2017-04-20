@@ -20,8 +20,6 @@ import java.io.IOException;
 /**
  * Created by rongkang on 2017-04-02.
  */
-//@Profile("dev")
-//@Component("stormLocalDrpcHandle")
 public class StormLocalDrpcHandle implements RpcHandle {
 
     private LocalDRPC drpc ;
