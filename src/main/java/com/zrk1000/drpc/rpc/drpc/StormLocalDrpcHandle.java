@@ -40,7 +40,7 @@ public class StormLocalDrpcHandle implements RpcHandle {
 
         ExtendProperties pps = new ExtendProperties();
         try {
-            pps.load( StormLocalDrpcHandle.class.getClassLoader().getResourceAsStream("drpcproxy.properties"));
+            pps.load( StormLocalDrpcHandle.class.getClassLoader().getResourceAsStream("drpcproxy-provider.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }

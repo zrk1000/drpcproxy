@@ -37,7 +37,6 @@ public class DispatchBolt extends BaseBasicBolt {
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(basePackages);
-        applicationContext.refresh();
         applicationContext.start();
         this.applicationContext = applicationContext;
     }
