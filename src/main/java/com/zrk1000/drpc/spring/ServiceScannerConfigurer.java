@@ -40,6 +40,11 @@ import java.util.Map;
 import static org.springframework.util.Assert.notNull;
 
 
+/**
+ * Created by rongkang on 2017/3/13.
+ * 扫描Service接口
+ *
+ */
 public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
 
   private String basePackage ;

@@ -34,6 +34,11 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
 
+/**
+ * Created by rongkang on 2017/3/13.
+ * 扫描Service接口
+ *
+ */
 public class ClassPathServiceScanner extends ClassPathBeanDefinitionScanner {
 
   private Class<? extends Annotation> annotationClass;

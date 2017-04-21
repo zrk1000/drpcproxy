@@ -19,6 +19,11 @@ import com.zrk1000.drpc.proxy.ServiceProxyFactory;
 import com.zrk1000.drpc.rpc.RpcHandle;
 import org.springframework.beans.factory.FactoryBean;
 
+/**
+ * Created by rongkang on 2017/3/13.
+ * 扫描Service接口
+ *
+ */
 public class ServiceFactoryBean<T>  implements FactoryBean<T> {
 
   private Class<T> serviceInterface;

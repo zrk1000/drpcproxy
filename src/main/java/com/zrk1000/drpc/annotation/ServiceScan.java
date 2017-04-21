@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Import;
 import java.lang.annotation.*;
 
 /**
- * Created by pc on 2017/3/13.
+ * Created by rongkang on 2017/3/13.
  * 扫描Service接口
  *
  */
