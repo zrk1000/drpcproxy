@@ -39,7 +39,7 @@ public class StormRemoteDrpcHandle implements RpcHandle {
         try{
             drpcClientPool.borrowObject();
             String drpcService = getDrpcService(serviceMethod.getClazz());
-            if(drpcResponse == null)
+            if(drpcService == null)
                 throw  new RuntimeException("未匹配到的远程drpc，请检查配置");
             result = client.execute(drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
             if(result!=null)
