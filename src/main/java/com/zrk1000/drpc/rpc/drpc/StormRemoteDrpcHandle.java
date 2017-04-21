@@ -2,14 +2,11 @@ package com.zrk1000.drpc.rpc.drpc;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zrk1000.drpc.Main;
-import com.zrk1000.drpc.config.ExtendProperties;
 import com.zrk1000.drpc.proxy.ServiceMethod;
 import com.zrk1000.drpc.rpc.RpcHandle;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.storm.Config;
-import org.apache.storm.thrift.transport.TTransportException;
 import org.apache.storm.utils.DRPCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +40,7 @@ public class StormRemoteDrpcHandle implements RpcHandle {
             drpcClientPool.borrowObject();
             String drpcService = getDrpcService(serviceMethod.getClazz());
             if(drpcService == null)
-                throw  new RuntimeException("未匹配到的远程drpc，请检查配置");
+                throw  new RuntimeException("Did not match to the remote DRPC, please check the configuration");
             result = client.execute(drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
             if(result!=null)
                 drpcResponse = JSON.parseObject(result, DrpcResponse.class);

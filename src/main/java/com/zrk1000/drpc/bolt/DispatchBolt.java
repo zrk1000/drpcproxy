@@ -41,7 +41,7 @@ public class DispatchBolt extends BaseBasicBolt {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
-        logger.info("");
+        logger.info("Initialize the spring ApplicationContext environmen");
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(basePackages);
         applicationContext.start();
         this.applicationContext = applicationContext;

@@ -33,7 +33,9 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
-
+/**
+ * Created by rongkang on 2017-03-012.
+ */
 public class ClassPathServiceScanner extends ClassPathBeanDefinitionScanner {
 
   private Class<? extends Annotation> annotationClass;

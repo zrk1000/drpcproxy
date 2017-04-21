@@ -18,7 +18,9 @@ package com.zrk1000.drpc.spring;
 import com.zrk1000.drpc.proxy.ServiceProxyFactory;
 import com.zrk1000.drpc.rpc.RpcHandle;
 import org.springframework.beans.factory.FactoryBean;
-
+/**
+ * Created by rongkang on 2017-03-012.
+ */
 public class ServiceFactoryBean<T>  implements FactoryBean<T> {
 
   private Class<T> serviceInterface;
