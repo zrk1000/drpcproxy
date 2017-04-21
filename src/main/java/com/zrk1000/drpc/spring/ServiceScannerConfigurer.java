@@ -52,8 +52,6 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
 
   private ApplicationContext applicationContext;
 
-//  private WebApplicationContext subWac;
-
   private String beanName;
 
   private boolean processPropertyPlaceHolders;
@@ -67,23 +65,17 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
   public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
     this.annotationClass = annotationClass;
   }
+
   public void setMarkerInterface(Class<?> superClass) {
     this.markerInterface = superClass;
   }
+
   public void setProcessPropertyPlaceHolders(boolean processPropertyPlaceHolders) {
     this.processPropertyPlaceHolders = processPropertyPlaceHolders;
   }
 
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
-//    //获取父容器
-//    WebApplicationContext rootWac= ContextLoader.getCurrentWebApplicationContext();
-//    //获取servletContext
-//    ServletContext servletContext = rootWac.getServletContext();
-//    //获取子容器
-//    WebApplicationContext subWac= WebApplicationContextUtils.getWebApplicationContext(servletContext,
-//            "org.springframework.web.servlet.FrameworkServlet.CONTEXT.springServlet" );
-//    this.subWac = subWac;
   }
 
   public void setBeanName(String name) {
@@ -97,7 +89,6 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
   public void setNameGenerator(BeanNameGenerator nameGenerator) {
     this.nameGenerator = nameGenerator;
   }
-
 
   public void afterPropertiesSet() throws Exception {
     notNull(this.basePackage, "Property 'basePackage' is required");
@@ -113,7 +104,6 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
     if (this.processPropertyPlaceHolders) {
       processPropertyPlaceHolders();
     }
-
     ClassPathServiceScanner scanner = new ClassPathServiceScanner(registry);
     scanner.setAnnotationClass(this.annotationClass);
     scanner.setMarkerInterface(this.markerInterface);

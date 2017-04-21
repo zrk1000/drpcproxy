@@ -62,7 +62,8 @@ public class ExtendProperties extends Properties {
         for (String key :subProperty.keySet()){
             String vaule = subProperty.get(key);
             String[] split = vaule.split(",");
-            result.put(key,new HashSet<String>(Arrays.asList(split)));
+            result.put(key,new HashSet<String>(Arrays.asList(split))
+            );
         }
         return  result;
     }

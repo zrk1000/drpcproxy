@@ -1,7 +1,8 @@
 package com.zrk1000.drpc.proxy;
 
-
 import com.zrk1000.drpc.rpc.RpcHandle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -13,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by rongkang on 2017-03-11.
  */
 public  class ServiceProxy<T> implements InvocationHandler,Serializable {
+
+    private static Logger logger = LoggerFactory.getLogger(ServiceProxy.class);
 
     private final RpcHandle rpcHandle;
 
@@ -36,6 +39,9 @@ public  class ServiceProxy<T> implements InvocationHandler,Serializable {
         //业务方法
         } else {
             ServiceMethod serviceMethod = cachedServiceMethod(method);
+            if(logger.isDebugEnabled())
+                logger.debug("execution proxy method ,clazz : {} , method : {} , parameters : {} ， returnType : {}",
+                        serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.getParams().values(),serviceMethod.getReturnType());
             return rpcHandle.exec(serviceMethod,args);
         }
     }

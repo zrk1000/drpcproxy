@@ -65,6 +65,6 @@ public class ServiceMethod {
 
     @Override
     public int hashCode() {
-        return clazz.hashCode() + methodName.hashCode() + params.hashCode() + returnType.getName().hashCode();
+        return clazz.hashCode() + methodName.hashCode()*17 + params.hashCode()*23 + returnType.getName().hashCode()*29;
     }
 }

@@ -11,11 +11,14 @@ import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by rongkang on 2017-04-03.
  */
 public class DispatchBolt extends BaseBasicBolt {
+
+    private static Logger logger = LoggerFactory.getLogger(DispatchBolt.class);
 
     private ConfigurableApplicationContext applicationContext;
 
@@ -36,6 +41,7 @@ public class DispatchBolt extends BaseBasicBolt {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
+        logger.info("");
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(basePackages);
         applicationContext.start();
         this.applicationContext = applicationContext;
@@ -54,22 +60,24 @@ public class DispatchBolt extends BaseBasicBolt {
             Class<?> interfaceClass = Class.forName(request.getInterfaceClazz());
             Object bean = applicationContext.getBean(interfaceClass);
             Method method = getMethod(request,interfaceClass);
+            if(logger.isDebugEnabled())
+                logger.debug("execution proxy method ,clazz : {} , method : {} , parameters : {} ， returnType : {}",
+                        request.getInterfaceClazz(),method.getName(), Arrays.toString(request.getParams()),method.getReturnType());
             result = invoke(method, bean, request.getParams());
             response.setData(result);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(),e);
             response.setMsg(e.getMessage());
             response.setCode(404);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(),e);
             response.setMsg(e.getMessage());
             response.setCode(400);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage(),e);
             response.setMsg(e.getMessage());
             response.setCode(500);
         }
-
         collector.emit(new Values(JSON.toJSONString(response), tuple.getValue(1)));
     }
 

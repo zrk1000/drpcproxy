@@ -11,6 +11,8 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.storm.Config;
 import org.apache.storm.thrift.transport.TTransportException;
 import org.apache.storm.utils.DRPCClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.Set;
  */
 public class StormRemoteDrpcHandle implements RpcHandle {
 
+    private static Logger logger = LoggerFactory.getLogger(StormRemoteDrpcHandle.class);
 
     private GenericObjectPool<DRPCClient> drpcClientPool ;
 
@@ -45,7 +48,7 @@ public class StormRemoteDrpcHandle implements RpcHandle {
             if(result!=null)
                 drpcResponse = JSON.parseObject(result, DrpcResponse.class);
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage(),e);
             drpcResponse.setCode(500);
             drpcResponse.setMsg(e.getMessage());
         }finally {
@@ -63,7 +66,8 @@ public class StormRemoteDrpcHandle implements RpcHandle {
     }
 
     public void close() throws IOException {
-        System.out.println("==============do close!");
+        drpcClientPool.close();
+        logger.info("drpcClientPool  close!");
     }
 
 
