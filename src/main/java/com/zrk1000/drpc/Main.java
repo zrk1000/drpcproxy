@@ -26,8 +26,9 @@ public class Main {
     public static void main(String[] args) {
 
         try {
+            logger.info("load drpcproxy-provider.properties");
             ExtendProperties pps = new ExtendProperties();
-            pps.load( Main.class.getResourceAsStream("classpath*:drpcproxy-provider.properties"));
+            pps.load( Main.class.getClassLoader().getResourceAsStream("drpcproxy-provider.properties"));
 
             String[] packages = pps.getStringArrayProperty("spring.bean.packages");
             String drpcSpoutName = pps.getProperty("drpc.spout.name");
@@ -45,6 +46,9 @@ public class Main {
                     topologyName = args[1];
                 }
             }
+            logger.info("loading completed ,drpcSpoutName:{},topologyName:{},spoutNum:{},dispatchBoltNum:{},resultBoltNum:{}",
+                    drpcSpoutName,topologyName,spoutNum,dispatchBoltNum,resultBoltNum);
+            logger.info("submit topology ......");
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();
             DRPCSpout drpcSpout = new DRPCSpout(drpcSpoutName);
@@ -52,14 +56,15 @@ public class Main {
             builder.setBolt("dispatch", new DispatchBolt(packages),dispatchBoltNum) .shuffleGrouping("drpcSpout");
             builder.setBolt("return", new ReturnResults(), resultBoltNum).shuffleGrouping("dispatch");
             StormSubmitter.submitTopologyWithProgressBar(topologyName, config, builder.createTopology());
+            logger.info("Submit completed ,");
         } catch (AlreadyAliveException e) {
-            logger.error(e.getMessage());
+            logger.error("submit failure:{}",e.getMessage());
         } catch (InvalidTopologyException e) {
-            logger.error(e.getMessage());
+            logger.error("submit failure:{}",e.getMessage());
         } catch (AuthorizationException e) {
-            logger.error(e.getMessage());
+            logger.error("submit failure:{}",e.getMessage());
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("submit failure:{}",e.getMessage());
         }
 
     }

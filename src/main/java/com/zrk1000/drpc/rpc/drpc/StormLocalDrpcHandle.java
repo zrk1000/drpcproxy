@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Timer;
 
 /**
  * Created by rongkang on 2017-04-02.
@@ -26,21 +27,22 @@ public class StormLocalDrpcHandle implements RpcHandle {
 
     private static Logger logger = LoggerFactory.getLogger(StormLocalDrpcHandle.class);
 
-    private LocalDRPC drpc ;
+    private static LocalDRPC drpc ;
 
-    private String drpcService ;
+    private static String drpcService ;
 
-    private LocalCluster cluster ;
+    private static LocalCluster cluster ;
 
     public StormLocalDrpcHandle() {
+        if(drpc!=null)
+            return;
         this.drpc = new LocalDRPC();
         this.drpcService = "drpcService";
 
         TopologyBuilder builder = new TopologyBuilder();
         Config conf = new Config();
-        conf.setNumWorkers(2);
+        conf.setNumWorkers(1);
         conf.setDebug(true);
-        conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
 
         ExtendProperties pps = new ExtendProperties();
         try {
@@ -50,13 +52,11 @@ public class StormLocalDrpcHandle implements RpcHandle {
         }
 
         String[] packages = pps.getStringArrayProperty("spring.bean.packages");
-
         DRPCSpout drpcSpout = new DRPCSpout(this.drpcService, drpc);
         builder.setSpout("drpcSpout", drpcSpout, 1);
         builder.setBolt("dispatch", new DispatchBolt(packages),1) .shuffleGrouping("drpcSpout");
         builder.setBolt("return", new ReturnResults(), 1).shuffleGrouping("dispatch");
         cluster = new LocalCluster();
-
         cluster.submitTopology("local_cluster", conf, builder.createTopology());
     }
 
@@ -77,7 +77,10 @@ public class StormLocalDrpcHandle implements RpcHandle {
     }
 
     public void close() throws IOException {
-        cluster.shutdown();
+//        if(drpc!=null)
+//            drpc.clone();
+//        if(cluster!=null)
+//            cluster.shutdown();
         logger.info("LocalCluster  shutdown!");
     }
 }
