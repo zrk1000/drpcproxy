@@ -29,6 +29,9 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by pc on 2017/3/13.
+ */
 public class ServiceScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
   public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
