@@ -26,7 +26,16 @@ public class StormRemoteDrpcHandle implements RpcHandle {
 
     private static Map<String,Set<String>> drpcServiceMap  = null ;
 
-    public StormRemoteDrpcHandle(Config conf, String stormHost, Integer stormPort,Integer stormTimeout,GenericObjectPoolConfig poolConfig,Map<String,Set<String>> drpcServiceMap) {
+    private static String stormHost;
+    private static int stormPort;
+    private static int stormTimeout;
+    private static Config conf;
+
+    public StormRemoteDrpcHandle(Config conf, String stormHost, Integer stormPort, Integer stormTimeout, GenericObjectPoolConfig poolConfig, Map<String,Set<String>> drpcServiceMap) {
+        this.conf = conf;
+        this.stormHost = stormHost;
+        this.stormPort = stormPort;
+        this.stormTimeout = stormTimeout;
         DrpcClientFactory factory = new DrpcClientFactory(conf, stormHost, stormPort, stormTimeout);
         if(drpcClientPool!=null)
             return;
@@ -39,7 +48,8 @@ public class StormRemoteDrpcHandle implements RpcHandle {
         String result = null;
         DrpcResponse drpcResponse = new DrpcResponse();
         try{
-            client = drpcClientPool.borrowObject();
+//            client = drpcClientPool.borrowObject();
+            client = new DRPCClient(conf,stormHost,stormPort,stormTimeout);
             String drpcService = getDrpcService(serviceMethod.getClazz());
             if(drpcService == null)
                 throw  new RuntimeException("Did not match to the remote DRPC, please check the configuration");
@@ -51,7 +61,9 @@ public class StormRemoteDrpcHandle implements RpcHandle {
             drpcResponse.setCode(500);
             drpcResponse.setMsg(e.getMessage());
         }finally {
-            drpcClientPool.returnObject(client);
+            if (client!=null)
+                client.close();
+//            drpcClientPool.returnObject(client);
         }
 
         return JSONObject.parseObject(JSON.toJSONString(drpcResponse.getData()), serviceMethod.getReturnType());
