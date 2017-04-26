@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.zrk1000.demo</groupId>
+  <artifactId>serviceimpl</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <build>
+    <finalName>service-provider</finalName>
+    <plugins>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer>
+                  <mainClass>com.zrk1000.drpc.SpringMain</mainClass>
+                </transformer>
+                <transformer>
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer>
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>pattern-local</id>
+      <properties>
+        <storm.scope>compile</storm.scope>
+      </properties>
+    </profile>
+    <profile>
+      <id>pattern-remote</id>
+      <properties>
+        <storm.scope>provided</storm.scope>
+      </properties>
+    </profile>
+    <profile>
+      <id>pattern-rely</id>
+      <properties>
+        <storm.scope>provided</storm.scope>
+      </properties>
+    </profile>
+  </profiles>
+</project>
+

@@ -11,6 +11,9 @@
     <modules>
         <module>proxy-spring</module>
         <module>proxy</module>
+        <module>demo-server</module>
+        <module>demo-serviceimpl</module>
+        <module>demo-web</module>
     </modules>
 
     <dependencyManagement>
