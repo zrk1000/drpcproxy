@@ -19,8 +19,8 @@ public class ConfigDispatchBolt extends AbsDispatchBolt{
 
     private Map<String,Class<?>> serviceImplsMap = new ConcurrentHashMap();
 
-
-    public ConfigDispatchBolt(String[] serviceImpls) {
+    public void init(Object object) {
+        String[] serviceImpls = (String[]) object;
         if(serviceImpls==null || serviceImpls.length == 0)
             throw new RuntimeException("\"service.impls\" are not empty");
         for (String serviceImpl : serviceImpls){
@@ -33,8 +33,8 @@ public class ConfigDispatchBolt extends AbsDispatchBolt{
             }
 
         }
-    }
 
+    }
     public void _prepare(Map stormConf, TopologyContext context) {
 
     }

@@ -2,6 +2,7 @@ package com.zrk1000.proxy.rpc.drpc;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.zrk1000.proxy.bolt.AbsDispatchBolt;
 import com.zrk1000.proxy.bolt.ConfigDispatchBolt;
 import com.zrk1000.proxy.config.ExtendProperties;
 import com.zrk1000.proxy.proxy.ServiceMethod;
@@ -24,7 +25,7 @@ public class StormLocalDrpcHandle implements RpcHandle {
 
     private String drpcService ;
 
-    public StormLocalDrpcHandle() {
+    public StormLocalDrpcHandle(AbsDispatchBolt dispatchBolt) {
         this.drpc = new LocalDRPC();
         this.drpcService = "drpcService";
 
@@ -41,11 +42,12 @@ public class StormLocalDrpcHandle implements RpcHandle {
             e.printStackTrace();
         }
 
-        String[] packages = pps.getStringArrayProperty("spring.bean.packages");
+        String[] serviceImpls = pps.getStringArrayProperty("service.impls");
+        dispatchBolt.init(serviceImpls);
 
         DRPCSpout drpcSpout = new DRPCSpout(this.drpcService, drpc);
         builder.setSpout("drpcSpout", drpcSpout, 1);
-        builder.setBolt("dispatch", new ConfigDispatchBolt(packages),1) .shuffleGrouping("drpcSpout");
+        builder.setBolt("dispatch", dispatchBolt,1) .shuffleGrouping("drpcSpout");
         builder.setBolt("return", new ReturnResults(), 1).shuffleGrouping("dispatch");
 
         LocalCluster cluster = new LocalCluster();

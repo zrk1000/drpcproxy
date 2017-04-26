@@ -22,8 +22,8 @@ public class SpringDispatchBolt extends AbsDispatchBolt{
 
     private String[] basePackages;
 
-
-    public SpringDispatchBolt(String[] basePackages) {
+    public void init(Object object) {
+        String[] basePackages = (String[]) object;
         this.basePackages = basePackages;
     }
 

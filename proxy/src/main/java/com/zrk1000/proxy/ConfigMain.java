@@ -44,11 +44,14 @@ public class ConfigMain {
                     topologyName = args[1];
                 }
             }
+            ConfigDispatchBolt configDispatchBolt = new ConfigDispatchBolt();
+            configDispatchBolt.init(serviceImpls);
+
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();
             DRPCSpout drpcSpout = new DRPCSpout(drpcSpoutName);
             builder.setSpout("drpcSpout", drpcSpout, spoutNum);
-            builder.setBolt("dispatch", new ConfigDispatchBolt(serviceImpls),dispatchBoltNum) .shuffleGrouping("drpcSpout");
+            builder.setBolt("dispatch",configDispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
             builder.setBolt("return", new ReturnResults(), resultBoltNum).shuffleGrouping("dispatch");
             StormSubmitter.submitTopologyWithProgressBar(topologyName, config, builder.createTopology());
         } catch (AlreadyAliveException e) {

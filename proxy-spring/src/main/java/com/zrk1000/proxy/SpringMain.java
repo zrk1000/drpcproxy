@@ -46,11 +46,14 @@ public class SpringMain {
                     topologyName = args[1];
                 }
             }
+            SpringDispatchBolt springDispatchBolt = new SpringDispatchBolt();
+            springDispatchBolt.init(packages);
+
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();
             DRPCSpout drpcSpout = new DRPCSpout(drpcSpoutName);
             builder.setSpout("drpcSpout", drpcSpout, spoutNum);
-            builder.setBolt("dispatch", new SpringDispatchBolt(packages),dispatchBoltNum) .shuffleGrouping("drpcSpout");
+            builder.setBolt("dispatch", springDispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
             builder.setBolt("return", new ReturnResults(), resultBoltNum).shuffleGrouping("dispatch");
             StormSubmitter.submitTopologyWithProgressBar(topologyName, config, builder.createTopology());
         } catch (AlreadyAliveException e) {

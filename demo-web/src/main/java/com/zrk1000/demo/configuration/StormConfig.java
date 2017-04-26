@@ -2,6 +2,7 @@ package com.zrk1000.demo.configuration;
 
 
 import com.zrk1000.proxy.annotation.ServiceScan;
+import com.zrk1000.proxy.bolt.SpringDispatchBolt;
 import com.zrk1000.proxy.rpc.RpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormRemoteDrpcHandle;
@@ -28,7 +29,7 @@ public class StormConfig {
     @Scope("singleton")
     @Bean("stormDrpcHandle")
     public RpcHandle getStormLocalRpcHandle(){
-        StormLocalDrpcHandle drpcHandle = new StormLocalDrpcHandle();
+        StormLocalDrpcHandle drpcHandle = new StormLocalDrpcHandle(new SpringDispatchBolt());
         return  drpcHandle;
     }
 

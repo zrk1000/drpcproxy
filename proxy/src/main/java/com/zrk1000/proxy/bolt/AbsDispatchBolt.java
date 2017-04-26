@@ -24,6 +24,8 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt {
 
     private Map<String,Map<Integer ,Method>> methodCache = new ConcurrentHashMap();
 
+    public abstract void init(Object object);
+
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         super.prepare(stormConf,context);
