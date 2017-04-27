@@ -1,6 +1,5 @@
-package com.zrk1000.demo;
+package com.zrk1000.proxy;
 
-import com.zrk1000.proxy.ConfigMain;
 import com.zrk1000.proxy.bolt.ConfigDispatchBolt;
 import com.zrk1000.proxy.config.ExtendProperties;
 import com.zrk1000.proxy.proxy.ServiceProxyFactory;

@@ -8,6 +8,11 @@
     <artifactId>demo-customer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+    </properties>
+
     <profiles>
         <profile>
             <id>pattern-local</id>
@@ -15,24 +20,47 @@
                 <profiles.pattern>local</profiles.pattern>
                 <storm.scope>compile</storm.scope>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.zrk1000.demo</groupId>
+                    <artifactId>demo-serviceimpl</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>pattern-remote</id>
             <properties>
                 <profiles.pattern>remote</profiles.pattern>
-                <storm.scope>compile</storm.scope>
+                <storm.scope>provided</storm.scope>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.zrk1000.demo</groupId>
+                    <artifactId>demo-server</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>pattern-rely</id>
             <properties>
                 <profiles.pattern>rely</profiles.pattern>
-                <storm.scope>provided</storm.scope>
+                <storm.scope>compile</storm.scope>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.zrk1000.demo</groupId>
+                    <artifactId>demo-serviceimpl</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
         </profile>
+
+
         <profile>
             <id>env-dev</id>
             <properties>
@@ -62,7 +90,7 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>1.1.0</version>
-            <scope>compile</scope>
+            <scope>${storm.scope}</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -77,12 +105,12 @@
                     <artifactId>log4j-slf4j-impl</artifactId>
                 </exclusion>
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>com.zrk1000.drpc</groupId>
             <artifactId>proxy</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>${storm.scope}</scope>
         </dependency>
 
         <dependency>
@@ -90,23 +118,64 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.zrk1000.demo</groupId>
-            <artifactId>demo-serviceimpl</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
     </dependencies>
 
 
     <build>
+        <!--http://blog.csdn.net/johnnywww/article/details/7964326-->
         <finalName>demo-customer</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <!-- 设置源文件编码方式 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <!-- 拷贝依赖的jar包到lib目录 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/lib
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- 打包source文件为jar文件 -->
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

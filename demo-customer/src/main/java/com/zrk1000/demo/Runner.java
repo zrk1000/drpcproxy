@@ -3,12 +3,8 @@ package com.zrk1000.demo;
 import com.zrk1000.demo.model.User;
 import com.zrk1000.demo.service.TestService;
 import com.zrk1000.demo.service.UserService;
-import com.zrk1000.proxy.bolt.ConfigDispatchBolt;
-import com.zrk1000.proxy.proxy.ServiceProxyFactory;
-import com.zrk1000.proxy.rpc.RpcHandle;
-import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
+import com.zrk1000.proxy.ServiceImplFactory;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
