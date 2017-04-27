@@ -1,6 +1,7 @@
 package com.zrk1000.demo;
 
 import com.zrk1000.demo.model.User;
+import com.zrk1000.demo.service.TestService;
 import com.zrk1000.demo.service.UserService;
 import com.zrk1000.proxy.bolt.ConfigDispatchBolt;
 import com.zrk1000.proxy.proxy.ServiceProxyFactory;
@@ -8,6 +9,8 @@ import com.zrk1000.proxy.rpc.RpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,9 +28,19 @@ public class Runner {
 
 
         UserService userService = ServiceImplFactory.newInstance(UserService.class);
+        TestService testService = ServiceImplFactory.newInstance(TestService.class);
 
         User user = userService.getUser("tom");
-        System.out.println("user:"+user.toString());
+        System.out.println("------------user:"+user.toString());
+        testService.retunrVoid();
+        testService.basedTypeParameter(1,2L,3D,true,(byte)5,'6',7.0F,(short)8);
+
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("aaaaa");
+        list.add("bbbbb");
+        Map<String, String> map = testService.complexTypes(list);
+
+        System.out.println(map.toString());
 
 //        synchronized (Runner.class) {
 //            while (true) {

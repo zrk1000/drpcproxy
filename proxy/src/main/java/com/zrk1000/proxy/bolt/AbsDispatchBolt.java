@@ -53,10 +53,13 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt {
     }
 
     public Object invoke(Method method,Object impl,Object[] params) throws InvocationTargetException, IllegalAccessException {
-        Object[] params_final = new Object[params.length];
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        for (int i = 0; i < parameterTypes.length; i++)
-            params_final[i] = JSON.parseObject(JSON.toJSONString(params[i]),parameterTypes[i]);
+        Object[] params_final = null;
+        if(params!=null){
+            params_final = new Object[params.length];
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            for (int i = 0; i < parameterTypes.length; i++)
+                params_final[i] = JSON.parseObject(JSON.toJSONString(params[i]),parameterTypes[i]);
+        }
         return method.invoke(impl,params_final);
     }
 

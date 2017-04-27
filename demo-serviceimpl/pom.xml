@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zrk1000.demo</groupId>
-    <artifactId>demo-serivceimpl</artifactId>
+    <artifactId>demo-serviceimpl</artifactId>
 
     <dependencies>
         <dependency>
