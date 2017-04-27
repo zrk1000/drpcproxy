@@ -26,7 +26,7 @@ public class ConfigMain {
 
         try {
             ExtendProperties pps = new ExtendProperties();
-            pps.load( ConfigMain.class.getResourceAsStream("classpath*:drpcproxy-provider.properties"));
+            pps.load( ConfigMain.class.getResourceAsStream("drpcproxy-provider.properties"));
 
             String[] serviceImpls = pps.getStringArrayProperty("service.impls");
             String drpcSpoutName = pps.getProperty("drpc.spout.name");
