@@ -29,7 +29,7 @@ public class StormConfig {
     @Scope("singleton")
     @Bean("stormDrpcHandle")
     public RpcHandle getStormLocalRpcHandle(){
-        StormLocalDrpcHandle drpcHandle = new StormLocalDrpcHandle(new SpringDispatchBolt());
+        StormLocalDrpcHandle drpcHandle = new StormLocalDrpcHandle(SpringDispatchBolt.class);
         return  drpcHandle;
     }
 

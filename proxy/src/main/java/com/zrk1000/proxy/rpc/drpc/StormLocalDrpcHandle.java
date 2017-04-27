@@ -25,7 +25,15 @@ public class StormLocalDrpcHandle implements RpcHandle {
 
     private String drpcService ;
 
-    public StormLocalDrpcHandle(AbsDispatchBolt dispatchBolt) {
+    public StormLocalDrpcHandle(Class<? extends AbsDispatchBolt> clazz) {
+        AbsDispatchBolt dispatchBolt = null;
+        try {
+            dispatchBolt = clazz.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         this.drpc = new LocalDRPC();
         this.drpcService = "drpcService";
 

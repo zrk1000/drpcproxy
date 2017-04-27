@@ -11,9 +11,13 @@
     <modules>
         <module>proxy-spring</module>
         <module>proxy</module>
+
         <module>demo-server</module>
         <module>demo-serviceimpl</module>
-        <module>demo-web</module>
+        <module>demo-serviceimpl-spring</module>
+
+        <module>demo-customer</module>
+        <module>demo-customer-spring</module>
     </modules>
 
     <dependencyManagement>
@@ -39,11 +43,6 @@
                 <artifactId>storm-core</artifactId>
                 <version>1.0.1</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.zrk1000.drpc</groupId>
-                <artifactId>proxy</artifactId>
-                <version>1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
