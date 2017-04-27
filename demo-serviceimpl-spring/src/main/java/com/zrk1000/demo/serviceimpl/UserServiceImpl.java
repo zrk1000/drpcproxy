@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    public User getUser(String name) throws Exception{
+    public User getUser(String name){
         User user = new User();
         if("tom".equals(name)){
             user.setAge(12);
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
             user.setName("tom");
 
         }else {
-            throw new Exception("业务异常");
+            throw new RuntimeException("业务异常");
         }
         return user;
     }

@@ -8,6 +8,7 @@ import com.zrk1000.demo.model.User;
  */
 public interface UserService {
 
-    User getUser(String name) throws Exception;
+    User getUser(String name);
+
 
 }
