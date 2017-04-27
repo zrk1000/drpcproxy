@@ -22,7 +22,7 @@ public class StormRemoteDrpcHandle implements RpcHandle {
 
     private static Logger logger = LoggerFactory.getLogger(StormRemoteDrpcHandle.class);
 
-    private static GenericObjectPool<DRPCClient> drpcClientPool = null;
+//    private static GenericObjectPool<DRPCClient> drpcClientPool = null;
 
     private static Map<String,Set<String>> drpcServiceMap  = null ;
 
@@ -31,15 +31,16 @@ public class StormRemoteDrpcHandle implements RpcHandle {
     private static int stormTimeout;
     private static Config conf;
 
-    public StormRemoteDrpcHandle(Config conf, String stormHost, Integer stormPort, Integer stormTimeout, GenericObjectPoolConfig poolConfig, Map<String,Set<String>> drpcServiceMap) {
+    public StormRemoteDrpcHandle(Config conf, String stormHost, Integer stormPort, Integer stormTimeout, Map<String,Set<String>> drpcServiceMap) {
+//    public StormRemoteDrpcHandle(Config conf, String stormHost, Integer stormPort, Integer stormTimeout, GenericObjectPoolConfig poolConfig, Map<String,Set<String>> drpcServiceMap) {
         this.conf = conf;
         this.stormHost = stormHost;
         this.stormPort = stormPort;
         this.stormTimeout = stormTimeout;
-        DrpcClientFactory factory = new DrpcClientFactory(conf, stormHost, stormPort, stormTimeout);
-        if(drpcClientPool!=null)
-            return;
-        this.drpcClientPool = new GenericObjectPool<DRPCClient>(factory,poolConfig);
+//        DrpcClientFactory factory = new DrpcClientFactory(conf, stormHost, stormPort, stormTimeout);
+//        if(drpcClientPool!=null)
+//            return;
+//        this.drpcClientPool = new GenericObjectPool<DRPCClient>(factory,poolConfig);
         this.drpcServiceMap = drpcServiceMap;
     }
 

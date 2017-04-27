@@ -6,7 +6,6 @@ import com.zrk1000.proxy.bolt.SpringDispatchBolt;
 import com.zrk1000.proxy.rpc.RpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormRemoteDrpcHandle;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.storm.Config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,11 +32,11 @@ public class StormConfig {
         return  drpcHandle;
     }
 
-    @Bean
-    @ConfigurationProperties("pool.config")
-    public GenericObjectPoolConfig getGenericObjectPoolConfig(){
-        return new GenericObjectPoolConfig();
-    }
+//    @Bean
+//    @ConfigurationProperties("pool.config")
+//    public GenericObjectPoolConfig getGenericObjectPoolConfig(){
+//        return new GenericObjectPoolConfig();
+//    }
 
     @Bean
     @ConfigurationProperties("drpc.client")
@@ -46,23 +45,29 @@ public class StormConfig {
     }
 
     @Bean
-    @ConfigurationProperties("spout.mapping")
-    public SpoutMapping getSpoutMapping(){
-        return new SpoutMapping();
+    @ConfigurationProperties("topology.mapping")
+    public TopologyMapping getTopologyMapping(){
+        return new TopologyMapping();
     }
-
 
 
 
 
     @Profile("remote")
-//    @Scope("singleton")
     @Bean("stormDrpcHandle")
-    public RpcHandle getStormRemoteRpcHandle(GenericObjectPoolConfig poolConfig,DrpcClientConfig clientConfig,SpoutMapping spoutMapping){
+    public RpcHandle getStormRemoteRpcHandle(DrpcClientConfig clientConfig,TopologyMapping topologyMapping){
         Config config = new Config();
         config.putAll(clientConfig.getConfig());
-        return  new StormRemoteDrpcHandle(config,clientConfig.getHost(),clientConfig.getPort(),clientConfig.getTimeout(),poolConfig,spoutMapping.getConfig());
+        return  new StormRemoteDrpcHandle(config,clientConfig.getHost(),clientConfig.getPort(),clientConfig.getTimeout(),topologyMapping.getConfig());
     }
+
+//    @Profile("remote")
+//    @Bean("stormDrpcHandle")
+//    public RpcHandle getStormRemoteRpcHandle(GenericObjectPoolConfig poolConfig,DrpcClientConfig clientConfig,TopologyMapping spoutMapping){
+//        Config config = new Config();
+//        config.putAll(clientConfig.getConfig());
+//        return  new StormRemoteDrpcHandle(config,clientConfig.getHost(),clientConfig.getPort(),clientConfig.getTimeout(),poolConfig,spoutMapping.getConfig());
+//    }
 
     class DrpcClientConfig{
         private String host;
@@ -103,7 +108,7 @@ public class StormConfig {
         }
     }
 
-    class SpoutMapping{
+    class TopologyMapping {
 
         Map<String, Set<String>> config;
 

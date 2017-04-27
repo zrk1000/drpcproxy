@@ -10,49 +10,22 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.zrk1000.demo</groupId>
-    <artifactId>demo-serviceimpl</artifactId>
+    <artifactId>demo-serivceimpl</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.zrk1000.drpc</groupId>
-            <artifactId>proxy</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-core</artifactId>
-            <version>1.1.0</version>
-        </dependency>
         <dependency>
             <groupId>com.zrk1000.demo</groupId>
             <artifactId>demo-server</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-    </dependencies>
 
-    <profiles>
-        <profile>
-            <id>pattern-local</id>
-            <properties>
-                <storm.scope>compile</storm.scope>
-            </properties>
-        </profile>
-        <profile>
-            <id>pattern-remote</id>
-            <properties>
-                <storm.scope>provided</storm.scope>
-            </properties>
-        </profile>
-        <profile>
-            <id>pattern-rely</id>
-            <properties>
-                <storm.scope>provided</storm.scope>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-    </profiles>
+        <!--drpc支持-->
+        <dependency>
+            <groupId>com.zrk1000.drpc</groupId>
+            <artifactId>proxy</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>service-provider</finalName>
@@ -69,7 +42,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.zrk1000.drpc.ConfigMain</mainClass>
+                                    <mainClass>com.zrk1000.proxy.ConfigMain</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

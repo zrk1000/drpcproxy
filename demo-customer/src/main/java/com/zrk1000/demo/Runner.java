@@ -19,27 +19,25 @@ public class Runner {
 
 
 
+
+
     public static void main(String[] args) {
 
 
-        UserService userService = ServiceProxyFactory.newInstance(UserService.class,new StormLocalDrpcHandle(ConfigDispatchBolt.class));
+        UserService userService = ServiceImplFactory.newInstance(UserService.class);
 
-        try {
-            User user = userService.getUser("tom");
-            System.out.println(user.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        User user = userService.getUser("tom");
+        System.out.println("user:"+user.toString());
 
-        synchronized (Runner.class) {
-            while (true) {
-                try {
-                    Runner.class.wait();
-                } catch (InterruptedException e) {
-                    System.err.println("== synchronized error:"+e);
-                }
-            }
-        }
+//        synchronized (Runner.class) {
+//            while (true) {
+//                try {
+//                    Runner.class.wait();
+//                } catch (InterruptedException e) {
+//                    System.err.println("== synchronized error:"+e);
+//                }
+//            }
+//        }
     }
 }
 
