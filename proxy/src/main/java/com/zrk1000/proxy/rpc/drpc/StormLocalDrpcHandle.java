@@ -12,9 +12,13 @@ import org.apache.storm.LocalCluster;
 import org.apache.storm.LocalDRPC;
 import org.apache.storm.drpc.DRPCSpout;
 import org.apache.storm.drpc.ReturnResults;
+import org.apache.storm.shade.com.google.common.collect.Sets;
 import org.apache.storm.topology.TopologyBuilder;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Created by rongkang on 2017-04-02.
@@ -43,15 +47,33 @@ public class StormLocalDrpcHandle implements RpcHandle {
         conf.setDebug(true);
 //        conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
 
-        ExtendProperties pps = new ExtendProperties();
+
+        Set<String> serviceImpls = new HashSet<String>();
         try {
-            pps.load( StormLocalDrpcHandle.class.getClassLoader().getResourceAsStream("drpcproxy-provider.properties"));
+            Enumeration<URL> resources = StormLocalDrpcHandle.class.getClassLoader().getResources("drpcproxy-provider.properties");
+            while(resources.hasMoreElements()) {
+                InputStream in = null;
+                try {
+                    in = resources.nextElement().openStream();
+                    ExtendProperties eps = new ExtendProperties();
+                    eps.load(in);
+                    String[] arrayProperty = eps.getStringArrayProperty("service.impls");
+                    for(String property:arrayProperty){
+                        if(serviceImpls.contains(property))
+                            throw new RuntimeException("The 'drpcproxy-provider.properties' contains the same '"+ property +"' content");
+                        serviceImpls.add(property);
+                    }
+
+                } finally {
+                    if(in != null)
+                        try {in.close();} catch (IOException e) {e.printStackTrace();}
+                }
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading 'drpcproxy-provider.properties'");
         }
 
-        String[] serviceImpls = pps.getStringArrayProperty("service.impls");
-        dispatchBolt.init(serviceImpls);
+        dispatchBolt.init(serviceImpls.toArray());
 
         DRPCSpout drpcSpout = new DRPCSpout(this.drpcService, drpc);
         builder.setSpout("drpcSpout", drpcSpout, 1);
@@ -79,6 +101,6 @@ public class StormLocalDrpcHandle implements RpcHandle {
     }
 
     public void close() throws IOException {
-        System.out.println("==============do close!");
+
     }
 }
