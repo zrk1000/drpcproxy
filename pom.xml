@@ -13,6 +13,7 @@
         <module>proxy</module>
 
         <module>demo-server</module>
+
         <module>demo-serviceimpl</module>
         <module>demo-serviceimpl-spring</module>
 

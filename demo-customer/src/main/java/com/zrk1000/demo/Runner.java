@@ -7,6 +7,8 @@ import com.zrk1000.proxy.proxy.ServiceProxyFactory;
 import com.zrk1000.proxy.rpc.RpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
 
+import java.io.InputStream;
+
 /**
  * Created with IntelliJ IDEA.
  * User: zrk-PC
@@ -19,8 +21,8 @@ public class Runner {
 
     public static void main(String[] args) {
 
-        RpcHandle rpcHandle = new StormLocalDrpcHandle(ConfigDispatchBolt.class);
-        UserService userService = ServiceProxyFactory.newInstance(UserService.class,rpcHandle);
+
+        UserService userService = ServiceProxyFactory.newInstance(UserService.class,new StormLocalDrpcHandle(ConfigDispatchBolt.class));
 
         try {
             User user = userService.getUser("tom");

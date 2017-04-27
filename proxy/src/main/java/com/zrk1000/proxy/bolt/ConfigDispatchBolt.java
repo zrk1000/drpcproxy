@@ -27,7 +27,7 @@ public class ConfigDispatchBolt extends AbsDispatchBolt{
             try {
                 Class<?> serviceImplClass = Class.forName(serviceImpl);
                 for (Class<?> _interface:serviceImplClass.getInterfaces() )
-                    serviceImplsMap.put(_interface.getClass().getCanonicalName(),serviceImplClass);
+                    serviceImplsMap.put(_interface.getCanonicalName(),serviceImplClass);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Unable to find the class \""+serviceImpl+"\"");
             }

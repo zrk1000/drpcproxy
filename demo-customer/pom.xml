@@ -63,7 +63,7 @@
             <artifactId>storm-core</artifactId>
             <version>1.1.0</version>
             <!--<scope>${storm.scope}</scope>-->
-            <scope>compile</scope>
+            <!--<scope>compile</scope>-->
         </dependency>
         <dependency>
             <groupId>com.zrk1000.drpc</groupId>
@@ -79,6 +79,25 @@
 
     </dependencies>
 
+
+    <build>
+        <finalName>web</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
