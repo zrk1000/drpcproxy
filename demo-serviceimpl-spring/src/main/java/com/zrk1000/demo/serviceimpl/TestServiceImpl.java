@@ -1,6 +1,7 @@
 package com.zrk1000.demo.serviceimpl;
 
 import com.zrk1000.demo.service.TestService;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
  * Date: 2017/4/27
  * Time: 17:11
  */
+@Service
 public class TestServiceImpl implements TestService{
 
     public void retunrVoid() {

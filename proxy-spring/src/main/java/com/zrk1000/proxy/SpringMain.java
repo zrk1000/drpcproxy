@@ -28,9 +28,9 @@ public class SpringMain {
 
         try {
             ExtendProperties pps = new ExtendProperties();
-            pps.load( SpringMain.class.getClassLoader().getResourceAsStream("classpath*:drpcproxy-provider.properties"));
+            pps.load( SpringMain.class.getClassLoader().getResourceAsStream("drpcproxy-provider.properties"));
 
-            String[] packages = pps.getStringArrayProperty("spring.bean.packages");
+            String[] packages = pps.getStringArrayProperty("service.impls");
             String drpcSpoutName = pps.getProperty("drpc.spout.name");
             String topologyName = pps.getProperty("drpc.topology.name");
             int spoutNum = pps.getIntProperty("drpc.spout.num", 1);
