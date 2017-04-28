@@ -135,7 +135,6 @@ public class ClassPathServiceScanner extends ClassPathBeanDefinitionScanner {
   }
 
   private void processBeanDefinitions(Set<BeanDefinitionHolder> beanDefinitions) {
-    System.out.println("***************processBeanDefinitions");
     AbstractBeanDefinition definition;
     for (BeanDefinitionHolder holder : beanDefinitions) {
 
