@@ -24,6 +24,10 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.11</artifactId>
+        </dependency>
     </dependencies>
 
 

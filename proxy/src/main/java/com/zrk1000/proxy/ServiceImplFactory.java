@@ -30,7 +30,7 @@ public class ServiceImplFactory {
 
     private static Map<String,Class<?>> serviceImplsMap = new ConcurrentHashMap();
 
-    static {
+    public static void init(){
         try {
             ExtendProperties pps = new ExtendProperties();
             pps.load( ConfigMain.class.getClassLoader().getResourceAsStream("drpcproxy-consumer.properties"));

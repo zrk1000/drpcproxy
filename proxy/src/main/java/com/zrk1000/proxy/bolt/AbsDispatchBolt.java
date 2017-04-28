@@ -1,6 +1,9 @@
 package com.zrk1000.proxy.bolt;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
 import com.alibaba.fastjson.JSON;
+import com.zrk1000.proxy.akka.AkkaActor;
 import com.zrk1000.proxy.proxy.ServiceMethod;
 import com.zrk1000.proxy.rpc.drpc.DrpcRequest;
 import com.zrk1000.proxy.rpc.drpc.DrpcResponse;
@@ -20,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by rongkang on 2017-04-03.
  */
-public abstract class AbsDispatchBolt extends BaseBasicBolt {
+public abstract class AbsDispatchBolt extends BaseBasicBolt implements BoltHandle{
 
     private Map<String,Map<Integer ,Method>> methodCache = new ConcurrentHashMap();
 
@@ -37,19 +40,12 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt {
     public abstract DrpcResponse _execute(DrpcRequest drpcRequest);
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-        String param = tuple.getString(0);
-        DrpcRequest request = JSON.parseObject(param,DrpcRequest.class);
-        DrpcResponse response = _execute(request);
-        collector.emit(new Values(JSON.toJSONString(response), tuple.getValue(1)));
+        ActorRef actorRef = AkkaActor.actorSystem.actorOf(AkkaActor.props(collector,this));
+        actorRef.tell(tuple,null);
     }
-
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("result", "return-info"));
-    }
-
-    @Override
-    public void cleanup() {
     }
 
     public Object invoke(Method method,Object impl,Object[] params) throws InvocationTargetException, IllegalAccessException {

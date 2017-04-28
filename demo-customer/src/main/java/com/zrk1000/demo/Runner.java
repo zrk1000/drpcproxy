@@ -5,6 +5,7 @@ import com.zrk1000.demo.service.TestService;
 import com.zrk1000.demo.service.UserService;
 import com.zrk1000.proxy.ServiceImplFactory;
 
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -16,13 +17,9 @@ import java.util.Map;
  */
 public class Runner {
 
-
-
-
-
     public static void main(String[] args) {
 
-
+        ServiceImplFactory.init();
         UserService userService = ServiceImplFactory.newInstance(UserService.class);
         TestService testService = ServiceImplFactory.newInstance(TestService.class);
 
