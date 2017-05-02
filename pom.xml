@@ -19,6 +19,7 @@
 
         <module>demo-customer</module>
         <module>demo-customer-spring</module>
+        <module>demo-server-spring</module>
     </modules>
 
     <dependencyManagement>

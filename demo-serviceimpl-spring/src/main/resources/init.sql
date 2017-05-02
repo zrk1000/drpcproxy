@@ -1,0 +1,9 @@
+-- INSERT INTO USER(id,`name`,age)VALUES(1,'admin',25)
+-- INSERT INTO USER (id,`name`,age)VALUES(2,'administrator',26)
+-- INSERT INTO USER(id,`name`,age)VALUES(3,'tom',21)
+-- INSERT INTO USER(id,`name`,age)VALUES(4,'小红',20)
+--
+-- INSERT INTO GROUP (id,`name`,age)VALUES(1,'admin',25)
+-- INSERT INTO GROUP(id,`name`,age)VALUES(2,'administrator',26)
+-- INSERT INTO GROUP(id,`name`,age)VALUES(3,'tom',21)
+-- INSERT INTO GROUP(id,`name`,age)VALUES(4,'小红',20)
