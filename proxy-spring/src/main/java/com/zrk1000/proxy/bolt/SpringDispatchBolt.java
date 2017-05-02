@@ -9,6 +9,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +18,8 @@ import java.util.Map;
  * Time: 12:38
  */
 public class SpringDispatchBolt extends AbsDispatchBolt{
+
+    private Map<String,Class<?>> interfaceClassCache = new ConcurrentHashMap();
 
     private ConfigurableApplicationContext applicationContext;
 
@@ -41,10 +44,9 @@ public class SpringDispatchBolt extends AbsDispatchBolt{
         response.setMsg("success");
         Object result = null;
         try {
-            Class<?> interfaceClass = Class.forName(request.getInterfaceClazz());
-            Object bean = applicationContext.getBean(interfaceClass);
-            Method method = getMethod(request,interfaceClass);
-            result = invoke(method, bean, request.getParams());
+            Object bean = applicationContext.getBean(getInterfaceClass(request.getInterfaceClazz()));
+            Method method = getMethod(request);
+            result = invoke(bean, method, request.getParams());
             response.setData(result);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -62,6 +64,15 @@ public class SpringDispatchBolt extends AbsDispatchBolt{
         return response;
 
     }
+
+   private Class<?> getInterfaceClass(String interfaceClazz) throws ClassNotFoundException {
+       Class<?> aClass = interfaceClassCache.get(interfaceClazz);
+       if(aClass==null){
+           interfaceClassCache.put(interfaceClazz,Class.forName(interfaceClazz));
+           aClass = interfaceClassCache.get(interfaceClazz);
+       }
+       return aClass;
+   }
 }
 
     

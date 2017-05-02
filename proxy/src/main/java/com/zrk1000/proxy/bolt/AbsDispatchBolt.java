@@ -48,7 +48,7 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt implements BoltHandl
         declarer.declare(new Fields("result", "return-info"));
     }
 
-    public Object invoke(Method method,Object impl,Object[] params) throws InvocationTargetException, IllegalAccessException {
+    public Object invoke(Object impl,Method method,Object[] params) throws InvocationTargetException, IllegalAccessException {
         Object[] params_final = null;
         if(params!=null){
             params_final = new Object[params.length];
@@ -59,16 +59,15 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt implements BoltHandl
         return method.invoke(impl,params_final);
     }
 
-    public Method getMethod( DrpcRequest request,Class<?> interfaceClass){
+    public Method getMethod( DrpcRequest request) throws ClassNotFoundException {
         Map<Integer, Method> methodMap = methodCache.get(request.getInterfaceClazz());
         if(methodMap == null){
+            Class<?> interfaceClass = Class.forName(request.getInterfaceClazz());
             methodMap = new ConcurrentHashMap();
             Method[] methods = interfaceClass.getMethods();
             for (Method method:methods)
                 methodMap.put(new ServiceMethod(interfaceClass, method).hashCode(),method);
             methodCache.put(request.getInterfaceClazz(),methodMap);
-        }else {
-            methodMap =  methodCache.get(request.getInterfaceClazz());
         }
         return methodMap.get(request.getMethodHashCode());
     }

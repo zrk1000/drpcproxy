@@ -47,13 +47,12 @@ public class ConfigDispatchBolt extends AbsDispatchBolt{
         response.setMsg("success");
         Object result = null;
         try {
-            Class<?> interfaceClass = Class.forName(request.getInterfaceClazz());
             Class<?> serviceImpl = serviceImplsMap.get(request.getInterfaceClazz());
             if(serviceImpl == null)
                 throw  new ClassNotFoundException("Unable to find the class" + request.getInterfaceClazz() );
             Object impl = serviceImpl.newInstance();
-            Method method = getMethod(request,interfaceClass);
-            result = invoke(method, impl, request.getParams());
+            Method method = getMethod(request);
+            result = invoke(impl, method, request.getParams());
             response.setData(result);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
