@@ -13,9 +13,11 @@ import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.topology.TopologyBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by zrk-PC on 2017/4/13.
@@ -36,6 +38,9 @@ public class SpringMain {
             int spoutNum = pps.getIntProperty("drpc.spout.num", 1);
             int dispatchBoltNum = pps.getIntProperty("drpc.dispatch.bolt.num", 1);
             int resultBoltNum = pps.getIntProperty("drpc.result.bolt.num", 1);
+
+            AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(packages);
+            System.out.println(Arrays.toString(applicationContext.getBeanDefinitionNames()));
 
             if(args!=null&&args.length>0){
                 if(args.length==1){

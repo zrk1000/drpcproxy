@@ -31,8 +31,11 @@ public class UserServiceImpl implements UserService {
         return convert(userRepository.findTopByName(name));
     }
 
-    public List<UserDto> getUsersByName(String name) {
+    public List<UserDto> getUsers(String name) {
+        if(name==null)
+            return converts(userRepository.findAll());
         return converts(userRepository.findByName(name));
+
     }
 
     public List<UserDto> getUsersByGroup(Long groupId) {
@@ -40,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public Integer getCount() {
-        return userRepository.findCount();
+        return userRepository.countBy();
     }
 
 
@@ -48,15 +51,19 @@ public class UserServiceImpl implements UserService {
 
     //转换为dto
     private UserDto convert(User user){
-        UserDto dto = new UserDto();
-        BeanUtils.copyProperties(user,dto);
+        UserDto dto = null;
+        if(user!=null){
+            dto = new UserDto();
+            BeanUtils.copyProperties(user,dto);
+        }
         return dto;
     }
     //转换为List<dto>
     private List<UserDto> converts(List<User> users){
         List<UserDto> userDtos = new ArrayList<UserDto>();
-        for (User user : users)
-            userDtos.add(convert(user));
+        if(users!=null)
+            for (User user : users)
+                userDtos.add(convert(user));
         return userDtos;
     }
 

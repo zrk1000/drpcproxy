@@ -12,7 +12,7 @@ import java.util.List;
  * Date: 2017/5/2
  * Time: 15:11
  */
-@Repository
+//@Repository
 public interface UserRepository  extends JpaRepository<User,Long> {
 
     /**
@@ -41,7 +41,7 @@ public interface UserRepository  extends JpaRepository<User,Long> {
      * 查询所有用户数
      * @return
      */
-    Integer findCount();
+    Integer countBy();
 
 }
 

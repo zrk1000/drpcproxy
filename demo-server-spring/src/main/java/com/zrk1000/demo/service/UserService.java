@@ -16,7 +16,7 @@ public interface UserService {
 
     UserDto getUserByName(String name);
 
-    List<UserDto> getUsersByName(String name);
+    List<UserDto> getUsers(String name);
 
     List<UserDto> getUsersByGroup(Long groupId);
 

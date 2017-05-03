@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * Date: 2017/5/2
  * Time: 15:11
  */
-@Repository
+//@Repository
 public interface GroupRepository extends JpaRepository<Group,Long> {
 
 }

@@ -2,6 +2,8 @@ package com.zrk1000.demo.service;
 
 import com.zrk1000.demo.dto.GroupDto;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: zrk-PC
@@ -11,5 +13,10 @@ import com.zrk1000.demo.dto.GroupDto;
 public interface GroupService {
 
     GroupDto getGroup(Long id);
+
+    List<GroupDto> init();
+
+    List<GroupDto> getGroups();
+
 
 }

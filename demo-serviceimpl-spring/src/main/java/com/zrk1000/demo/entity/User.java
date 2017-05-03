@@ -1,6 +1,7 @@
 package com.zrk1000.demo.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,11 +10,13 @@ import javax.persistence.*;
  * Time: 16:25
  */
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "u_user")
+public class User  implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     @Column
@@ -23,7 +26,7 @@ public class User {
     private Integer age;
 
     @ManyToOne(cascade={CascadeType.REFRESH},fetch = FetchType.LAZY)
-    @JoinColumn(name="group")
+    @JoinColumn(name="group_id")
     private Group group;
 
     public Long getId() {
@@ -48,6 +51,14 @@ public class User {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
 

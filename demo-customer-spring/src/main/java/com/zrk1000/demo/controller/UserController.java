@@ -31,12 +31,12 @@ public class UserController {
     }
 
     @RequestMapping(value="/list",method = RequestMethod.GET)
-    public List<UserDto> getUsers(@RequestParam(required = true) String name){
-        return userService.getUsersByName(name);
+    public List<UserDto> getUsers(@RequestParam(required = false) String name){
+        return userService.getUsers(name);
     }
 
-    @RequestMapping(value="/{groupId}",method = RequestMethod.GET)
-    public List<UserDto> getUsers(@PathVariable("groupId") Long groupId){
+    @RequestMapping(value="/group",method = RequestMethod.GET)
+    public List<UserDto> getUsers(@RequestParam(required = false) Long groupId){
         return userService.getUsersByGroup(groupId);
     }
 
