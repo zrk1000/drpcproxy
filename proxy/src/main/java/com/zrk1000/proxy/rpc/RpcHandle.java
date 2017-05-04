@@ -11,6 +11,6 @@ import java.io.Closeable;
  */
 public interface RpcHandle extends Closeable {
 
-    Object exec(ServiceMethod serviceMethod, Object[] args);
+    Object exec(ServiceMethod serviceMethod, Object[] args) throws Throwable;
 
 }

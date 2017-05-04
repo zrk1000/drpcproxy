@@ -12,6 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +50,7 @@ public class StormRemoteDrpcHandle implements RpcHandle {
         this.drpcServiceMap = drpcServiceMap;
     }
 
-    public Object exec(ServiceMethod serviceMethod, Object[] args) {
+    public Object exec(ServiceMethod serviceMethod, Object[] args) throws Throwable {
         DRPCClient client = null;
         String result = null;
         DrpcResponse drpcResponse = new DrpcResponse();
@@ -57,10 +63,43 @@ public class StormRemoteDrpcHandle implements RpcHandle {
             result = client.execute(drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
             if(result!=null)
                 drpcResponse = JSON.parseObject(result, DrpcResponse.class);
-        }catch (Exception e){
-            logger.error(e.getMessage(),e);
-            drpcResponse.setCode(500);
-            drpcResponse.setMsg(e.getMessage());
+
+            if (drpcResponse.hasException()) {
+                try {
+                    Throwable exception = drpcResponse.getException();
+
+                    // 如果是checked异常，直接抛出
+                    if (! (exception instanceof RuntimeException) && (exception instanceof Exception)) {
+                        throw exception;
+                    }
+                    // 在方法签名上有声明，直接抛出
+                    Class<?>[] exceptionClassses = serviceMethod.getExceptionClassses();
+                    for (Class<?> exceptionClass : exceptionClassses) {
+                        if (exception.getClass().equals(exceptionClass)) {
+                            throw exception;
+                        }
+                    }
+                    // 异常类和接口类在同一jar包里，直接抛出
+                    String serviceFile = getCodeBase(serviceMethod.getServiceInterface());
+                    String exceptionFile = getCodeBase(exception.getClass());
+                    if (serviceFile == null || exceptionFile == null || serviceFile.equals(exceptionFile)){
+                        throw exception;
+                    }
+                    // 是JDK自带的异常，直接抛出
+                    String className = exception.getClass().getName();
+                    if (className.startsWith("java.") || className.startsWith("javax.")) {
+                        throw exception;
+                    }
+                    // 否则，包装成RuntimeException抛给客户端
+                    throw new RuntimeException(exception.getMessage());
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+//        }catch (Exception e){
+//            logger.error(e.getMessage(),e);
+//            drpcResponse.setCode(500);
+//            drpcResponse.setMsg(e.getMessage());
         }finally {
             if (client!=null)
                 client.close();
@@ -82,6 +121,20 @@ public class StormRemoteDrpcHandle implements RpcHandle {
         logger.info("drpcClientPool  close!");
     }
 
+    public static String getCodeBase(Class<?> cls) {
+        if (cls == null)
+            return null;
+        ProtectionDomain domain = cls.getProtectionDomain();
+        if (domain == null)
+            return null;
+        CodeSource source = domain.getCodeSource();
+        if (source == null)
+            return null;
+        URL location = source.getLocation();
+        if (location == null)
+            return null;
+        return location.getFile();
+    }
 
 }
 
