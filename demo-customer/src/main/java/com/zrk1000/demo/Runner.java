@@ -23,7 +23,7 @@ public class Runner {
         UserService userService = ServiceImplFactory.newInstance(UserService.class);
         TestService testService = ServiceImplFactory.newInstance(TestService.class);
 
-        User user = userService.getUser("tom");
+        User user = userService.getUser("tom1");
         System.out.println("------------user:"+user.toString());
         testService.retunrVoid();
         testService.basedTypeParameter(1,2L,3D,true,(byte)5,'6',7.0F,(short)8);
