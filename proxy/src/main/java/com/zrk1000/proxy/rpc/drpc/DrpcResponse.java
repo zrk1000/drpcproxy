@@ -11,6 +11,9 @@ public class DrpcResponse {
 
     private Object data;
 
+    private Throwable exception;
+
+
     public int getCode() {
         return code;
     }
@@ -33,5 +36,17 @@ public class DrpcResponse {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public Throwable getException() {
+        return exception;
+    }
+
+    public void setException(Throwable exception) {
+        this.exception = exception;
+    }
+
+    public boolean hasException() {
+        return exception != null;
     }
 }
