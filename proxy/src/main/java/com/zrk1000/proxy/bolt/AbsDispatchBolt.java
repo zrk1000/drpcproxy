@@ -1,6 +1,7 @@
 package com.zrk1000.proxy.bolt;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.alibaba.fastjson.JSON;
 import com.zrk1000.proxy.akka.AkkaActor;
@@ -25,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbsDispatchBolt extends BaseBasicBolt implements BoltHandle{
 
+    public static ActorSystem actorSystem;
+
     private Map<String,Map<Integer ,Method>> methodCache = new ConcurrentHashMap();
 
     public abstract void init(Object object);
@@ -32,6 +35,7 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt implements BoltHandl
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         super.prepare(stormConf,context);
+        this.actorSystem = ActorSystem.create("actorSystem");
         _prepare(stormConf,context);
     }
 
@@ -40,7 +44,7 @@ public abstract class AbsDispatchBolt extends BaseBasicBolt implements BoltHandl
     public abstract DrpcResponse _execute(DrpcRequest drpcRequest);
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-        ActorRef actorRef = AkkaActor.actorSystem.actorOf(AkkaActor.props(collector,this));
+        ActorRef actorRef = actorSystem.actorOf(AkkaActor.props(collector,this));
         actorRef.tell(tuple,null);
     }
 

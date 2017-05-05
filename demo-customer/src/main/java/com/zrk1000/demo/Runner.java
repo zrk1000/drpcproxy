@@ -27,19 +27,19 @@ public class Runner {
         User user = null;
         try {
             user = userService.getUser("tom1");
+            System.out.println("------------user:"+user.toString());
+            testService.retunrVoid();
+            testService.basedTypeParameter(1,2L,3D,true,(byte)5,'6',7.0F,(short)8);
+
+            ArrayList<String> list = new ArrayList<String>();
+            list.add("aaaaa");
+            list.add("bbbbb");
+            Map<String, String> map = testService.complexTypes(list);
+
+            System.out.println(map.toString());
         } catch (MyException e) {
             e.printStackTrace();
         }
-        System.out.println("------------user:"+user.toString());
-        testService.retunrVoid();
-        testService.basedTypeParameter(1,2L,3D,true,(byte)5,'6',7.0F,(short)8);
-
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("aaaaa");
-        list.add("bbbbb");
-        Map<String, String> map = testService.complexTypes(list);
-
-        System.out.println(map.toString());
 
 //        synchronized (Runner.class) {
 //            while (true) {

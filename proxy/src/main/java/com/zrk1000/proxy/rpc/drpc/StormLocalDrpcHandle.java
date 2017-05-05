@@ -7,6 +7,8 @@ import com.zrk1000.proxy.bolt.ConfigDispatchBolt;
 import com.zrk1000.proxy.config.ExtendProperties;
 import com.zrk1000.proxy.proxy.ServiceMethod;
 import com.zrk1000.proxy.rpc.RpcHandle;
+import com.zrk1000.proxy.utils.ReflectUtil;
+import com.zrk1000.proxy.utils.SerializableUtil;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.LocalDRPC;
@@ -100,18 +102,7 @@ public class StormLocalDrpcHandle implements RpcHandle {
             drpcResponse = JSON.parseObject(result, DrpcResponse.class);
 
         if (drpcResponse.hasException()) {
-            Exception exception = null;
-            try{
-                Class<?> aClass = Class.forName(drpcResponse.getException().getName());
-                Constructor<?> constructor = aClass.getConstructor(String.class);
-                exception = (Exception) constructor.newInstance(drpcResponse.getException().getMessage());
-                exception.setStackTrace(drpcResponse.getException().getStackTraceElements());
-            }catch (Exception e){
-                // 否则，包装成RuntimeException抛给客户端
-                RuntimeException runtimeException = new RuntimeException(drpcResponse.getException().getMessage());
-                runtimeException.setStackTrace(drpcResponse.getException().getStackTraceElements());
-                throw runtimeException;
-            }
+            Throwable exception = SerializableUtil.StrToObj(drpcResponse.getException(),Throwable.class);
             // 如果是checked异常，直接抛出
             if (! (exception instanceof RuntimeException) && (exception instanceof Exception)) {
                 throw exception;
@@ -124,8 +115,8 @@ public class StormLocalDrpcHandle implements RpcHandle {
                 }
             }
             // 异常类和接口类在同一jar包里，直接抛出
-            String serviceFile = getCodeBase(serviceMethod.getServiceInterface());
-            String exceptionFile = getCodeBase(exception.getClass());
+            String serviceFile = ReflectUtil.getCodeBase(serviceMethod.getServiceInterface());
+            String exceptionFile = ReflectUtil.getCodeBase(exception.getClass());
             if (serviceFile == null || exceptionFile == null || serviceFile.equals(exceptionFile)){
                 throw exception;
             }
@@ -136,8 +127,8 @@ public class StormLocalDrpcHandle implements RpcHandle {
             }
 
             // 否则，包装成RuntimeException抛给客户端
-            RuntimeException runtimeException = new RuntimeException(drpcResponse.getException().getMessage());
-            runtimeException.setStackTrace(drpcResponse.getException().getStackTraceElements());
+            RuntimeException runtimeException = new RuntimeException(exception.getClass().getName() + " : " + exception.getMessage());
+            runtimeException.setStackTrace(exception.getStackTrace());
             throw runtimeException;
 
         }
@@ -149,18 +140,4 @@ public class StormLocalDrpcHandle implements RpcHandle {
 
     }
 
-    public static String getCodeBase(Class<?> cls) {
-        if (cls == null)
-            return null;
-        ProtectionDomain domain = cls.getProtectionDomain();
-        if (domain == null)
-            return null;
-        CodeSource source = domain.getCodeSource();
-        if (source == null)
-            return null;
-        URL location = source.getLocation();
-        if (location == null)
-            return null;
-        return location.getFile();
-    }
 }

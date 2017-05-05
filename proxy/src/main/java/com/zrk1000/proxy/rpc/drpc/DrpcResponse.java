@@ -1,5 +1,7 @@
 package com.zrk1000.proxy.rpc.drpc;
 
+import com.zrk1000.proxy.utils.SerializableUtil;
+
 /**
  * Created by zrk-PC on 2017/4/11.
  */
@@ -11,7 +13,7 @@ public class DrpcResponse {
 
     private Object data;
 
-    private Exception exception;
+    private String exception;
 
 
     public int getCode() {
@@ -38,60 +40,20 @@ public class DrpcResponse {
         this.data = data;
     }
 
-    public Exception getException() {
+    public String getException() {
         return exception;
     }
 
-    public void setException(Exception exception) {
+    public void setException(String exception) {
         this.exception = exception;
     }
 
-    public void setException(String name, String message,StackTraceElement[] stackTraceElements) {
-        this.exception = new Exception(name,message,stackTraceElements);
+    public void setException(Throwable exception) {
+        this.exception = SerializableUtil.ObjToStr(exception);
     }
 
     public boolean hasException() {
         return exception != null;
     }
 
-    class Exception{
-
-        private String name;
-
-        private String message;
-
-        private StackTraceElement[] stackTraceElements;
-
-        public Exception() {}
-
-        public Exception(String name, String message,StackTraceElement[] stackTraceElements) {
-            this.name = name;
-            this.message = message;
-            this.stackTraceElements = stackTraceElements;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public StackTraceElement[] getStackTraceElements() {
-            return stackTraceElements;
-        }
-
-        public void setStackTraceElements(StackTraceElement[] stackTraceElements) {
-            this.stackTraceElements = stackTraceElements;
-        }
-    }
 }
