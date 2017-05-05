@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -92,50 +93,53 @@ public class StormLocalDrpcHandle implements RpcHandle {
 
     public Object exec(ServiceMethod serviceMethod, Object[] args) throws Throwable {
         DrpcResponse drpcResponse = new DrpcResponse();
-        String result = null;
-//        try{
-            result = drpc.execute(this.drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
-//        }catch (Exception e){
-//            logger.error(e.getMessage(),e);
-//            drpcResponse.setCode(500);
-//            drpcResponse.setMsg(e.getMessage());
-//        }
+        String result = drpc.execute(this.drpcService, new DrpcRequest(serviceMethod.getClazz(),serviceMethod.getMethodName(),serviceMethod.hashCode(),args).toJSONString());
         if(logger.isDebugEnabled())
             logger.debug("The remote invocation returns the result:"+ result);
         if(result!=null)
             drpcResponse = JSON.parseObject(result, DrpcResponse.class);
 
         if (drpcResponse.hasException()) {
-            try {
-                Throwable exception = drpcResponse.getException();
-
-                // 如果是checked异常，直接抛出
-                if (! (exception instanceof RuntimeException) && (exception instanceof Exception)) {
-                    throw exception;
-                }
-                // 在方法签名上有声明，直接抛出
-                Class<?>[] exceptionClassses = serviceMethod.getExceptionClassses();
-                for (Class<?> exceptionClass : exceptionClassses) {
-                    if (exception.getClass().equals(exceptionClass)) {
-                        throw exception;
-                    }
-                }
-                // 异常类和接口类在同一jar包里，直接抛出
-                String serviceFile = getCodeBase(serviceMethod.getServiceInterface());
-                String exceptionFile = getCodeBase(exception.getClass());
-                if (serviceFile == null || exceptionFile == null || serviceFile.equals(exceptionFile)){
-                    throw exception;
-                }
-                // 是JDK自带的异常，直接抛出
-                String className = exception.getClass().getName();
-                if (className.startsWith("java.") || className.startsWith("javax.")) {
-                    throw exception;
-                }
+            Exception exception = null;
+            try{
+                Class<?> aClass = Class.forName(drpcResponse.getException().getName());
+                Constructor<?> constructor = aClass.getConstructor(String.class);
+                exception = (Exception) constructor.newInstance(drpcResponse.getException().getMessage());
+                exception.setStackTrace(drpcResponse.getException().getStackTraceElements());
+            }catch (Exception e){
                 // 否则，包装成RuntimeException抛给客户端
-                throw new RuntimeException(exception.getMessage());
-            } catch (Exception e) {
-                throw e;
+                RuntimeException runtimeException = new RuntimeException(drpcResponse.getException().getMessage());
+                runtimeException.setStackTrace(drpcResponse.getException().getStackTraceElements());
+                throw runtimeException;
             }
+            // 如果是checked异常，直接抛出
+            if (! (exception instanceof RuntimeException) && (exception instanceof Exception)) {
+                throw exception;
+            }
+            // 在方法签名上有声明，直接抛出
+            Class<?>[] exceptionClassses = serviceMethod.getExceptionClassses();
+            for (Class<?> exceptionClass : exceptionClassses) {
+                if (exception.getClass().equals(exceptionClass)) {
+                    throw exception;
+                }
+            }
+            // 异常类和接口类在同一jar包里，直接抛出
+            String serviceFile = getCodeBase(serviceMethod.getServiceInterface());
+            String exceptionFile = getCodeBase(exception.getClass());
+            if (serviceFile == null || exceptionFile == null || serviceFile.equals(exceptionFile)){
+                throw exception;
+            }
+            // 是JDK自带的异常，直接抛出
+            String className = exception.getClass().getName();
+            if (className.startsWith("java.") || className.startsWith("javax.")) {
+                throw exception;
+            }
+
+            // 否则，包装成RuntimeException抛给客户端
+            RuntimeException runtimeException = new RuntimeException(drpcResponse.getException().getMessage());
+            runtimeException.setStackTrace(drpcResponse.getException().getStackTraceElements());
+            throw runtimeException;
+
         }
 
         return JSONObject.parseObject(JSON.toJSONString(drpcResponse.getData()), serviceMethod.getReturnType());

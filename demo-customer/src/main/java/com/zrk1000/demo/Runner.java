@@ -1,5 +1,6 @@
 package com.zrk1000.demo;
 
+import com.zrk1000.demo.exception.MyException;
 import com.zrk1000.demo.model.User;
 import com.zrk1000.demo.service.TestService;
 import com.zrk1000.demo.service.UserService;
@@ -23,7 +24,12 @@ public class Runner {
         UserService userService = ServiceImplFactory.newInstance(UserService.class);
         TestService testService = ServiceImplFactory.newInstance(TestService.class);
 
-        User user = userService.getUser("tom1");
+        User user = null;
+        try {
+            user = userService.getUser("tom1");
+        } catch (MyException e) {
+            e.printStackTrace();
+        }
         System.out.println("------------user:"+user.toString());
         testService.retunrVoid();
         testService.basedTypeParameter(1,2L,3D,true,(byte)5,'6',7.0F,(short)8);

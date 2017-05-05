@@ -1,5 +1,7 @@
 package com.zrk1000.demo.serviceimpl;
 
+import com.zrk1000.demo.exception.MyException;
+import com.zrk1000.demo.exception.MyOnlyException;
 import com.zrk1000.demo.model.User;
 import com.zrk1000.demo.service.UserService;
 import sun.dc.path.PathException;
@@ -13,7 +15,7 @@ import java.lang.reflect.Method;
 
 public class UserServiceImpl implements UserService {
 
-    public User getUser(String name) throws PathException {
+    public User getUser(String name) throws MyException{
         User user = new User();
         if("tom".equals(name)){
             user.setAge(12);
@@ -21,8 +23,7 @@ public class UserServiceImpl implements UserService {
             user.setName("tom");
 
         }else {
-            int a = 1/0;
-//            throw new RuntimeException("业务异常");
+            throw new MyException("业务异常");
         }
         return user;
     }

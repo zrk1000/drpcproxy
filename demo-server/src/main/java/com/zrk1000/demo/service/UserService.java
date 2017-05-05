@@ -1,6 +1,7 @@
 package com.zrk1000.demo.service;
 
 
+import com.zrk1000.demo.exception.MyException;
 import com.zrk1000.demo.model.User;
 import sun.dc.path.PathException;
 
@@ -9,7 +10,7 @@ import sun.dc.path.PathException;
  */
 public interface UserService {
 
-    User getUser(String name) throws PathException;
+    User getUser(String name) throws MyException;
 
 
 }

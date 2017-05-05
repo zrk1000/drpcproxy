@@ -50,20 +50,21 @@ public class SpringDispatchBolt extends AbsDispatchBolt{
             response.setData(result);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            response.setException(e);
+            response.setException(e.getClass().getName(),e.getMessage(),e.getStackTrace());
             response.setMsg(e.getMessage());
             response.setCode(404);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            response.setException(e);
+            response.setException(e.getClass().getName(),e.getMessage(),e.getStackTrace());
             response.setMsg(e.getMessage());
             response.setCode(400);
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-            response.setException(e);
             response.setMsg(e.getMessage());
+            response.setException(e.getTargetException().getClass().getName(),e.getTargetException().getMessage(),e.getTargetException().getStackTrace());
             response.setCode(500);
         }
+
         return response;
 
     }
