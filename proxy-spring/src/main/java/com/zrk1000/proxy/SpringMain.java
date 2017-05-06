@@ -1,7 +1,7 @@
 package com.zrk1000.proxy;
 
-import com.zrk1000.proxy.bolt.AbsDispatchBolt;
-import com.zrk1000.proxy.bolt.SpringDispatchBolt;
+import com.zrk1000.proxy.bolt.DispatchBolt;
+import com.zrk1000.proxy.bolt.SpringBoltHandler;
 import com.zrk1000.proxy.config.ExtendProperties;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
@@ -13,11 +13,8 @@ import org.apache.storm.generated.InvalidTopologyException;
 import org.apache.storm.topology.TopologyBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by zrk-PC on 2017/4/13.
@@ -39,9 +36,6 @@ public class SpringMain {
             int dispatchBoltNum = pps.getIntProperty("drpc.dispatch.bolt.num", 1);
             int resultBoltNum = pps.getIntProperty("drpc.result.bolt.num", 1);
 
-            AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(packages);
-            System.out.println(Arrays.toString(applicationContext.getBeanDefinitionNames()));
-
             if(args!=null&&args.length>0){
                 if(args.length==1){
                     drpcSpoutName = args[0];
@@ -51,14 +45,13 @@ public class SpringMain {
                     topologyName = args[1];
                 }
             }
-            SpringDispatchBolt springDispatchBolt = new SpringDispatchBolt();
-            springDispatchBolt.init(packages);
+            DispatchBolt dispatchBolt = new DispatchBolt(new SpringBoltHandler(packages));
 
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();
             DRPCSpout drpcSpout = new DRPCSpout(drpcSpoutName);
             builder.setSpout("drpcSpout", drpcSpout, spoutNum);
-            builder.setBolt("dispatch", springDispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
+            builder.setBolt("dispatch", dispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
             builder.setBolt("return", new ReturnResults(), resultBoltNum).shuffleGrouping("dispatch");
             StormSubmitter.submitTopologyWithProgressBar(topologyName, config, builder.createTopology());
         } catch (AlreadyAliveException e) {

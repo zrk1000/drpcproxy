@@ -9,7 +9,7 @@ import java.io.Closeable;
 /**
  * Created by zrk-PC on 2017/4/1.
  */
-public interface RpcHandle extends Closeable {
+public interface RpcHandle {
 
     Object exec(ServiceMethod serviceMethod, Object[] args) throws Throwable;
 

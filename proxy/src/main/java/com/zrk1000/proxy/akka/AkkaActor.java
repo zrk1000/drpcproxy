@@ -24,8 +24,6 @@ public class AkkaActor extends UntypedActor {
 
     private static Logger logger = LoggerFactory.getLogger(AkkaActor.class);
 
-    public static ActorSystem actorSystem = ActorSystem.create("actorSystem");
-
     private BasicOutputCollector collector;
     private BoltHandle boltHandle;
 
@@ -46,11 +44,10 @@ public class AkkaActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         if(logger.isDebugEnabled())
             logger.debug("do AkkaActor onReceive,message:{}",message);
-        logger.info("do AkkaActor onReceive");
         Tuple tuple = (Tuple) message;
         String param = tuple.getString(0);
         DrpcRequest request = JSON.parseObject(param,DrpcRequest.class);
-        DrpcResponse response = boltHandle._execute(request);
+        DrpcResponse response = boltHandle.execute(request);
         collector.emit(new Values(JSON.toJSONString(response), tuple.getValue(1)));
         context().stop(self());
     }

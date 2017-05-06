@@ -57,8 +57,6 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
 
   private ApplicationContext applicationContext;
 
-//  private WebApplicationContext subWac;
-
   private String beanName;
 
   private boolean processPropertyPlaceHolders;
@@ -81,14 +79,6 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
 
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
-//    //获取父容器
-//    WebApplicationContext rootWac= ContextLoader.getCurrentWebApplicationContext();
-//    //获取servletContext
-//    ServletContext servletContext = rootWac.getServletContext();
-//    //获取子容器
-//    WebApplicationContext subWac= WebApplicationContextUtils.getWebApplicationContext(servletContext,
-//            "org.springframework.web.servlet.FrameworkServlet.CONTEXT.springServlet" );
-//    this.subWac = subWac;
   }
 
   public void setBeanName(String name) {
@@ -133,17 +123,17 @@ public class ServiceScannerConfigurer implements BeanDefinitionRegistryPostProce
     Map<String, PropertyResourceConfigurer> prcs = applicationContext.getBeansOfType(PropertyResourceConfigurer.class);
 
     if (!prcs.isEmpty() && applicationContext instanceof GenericApplicationContext) {
-      BeanDefinition mapperScannerBean = ((GenericApplicationContext) applicationContext)
+      BeanDefinition serviceScannerBean = ((GenericApplicationContext) applicationContext)
           .getBeanFactory().getBeanDefinition(beanName);
 
       DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
-      factory.registerBeanDefinition(beanName, mapperScannerBean);
+      factory.registerBeanDefinition(beanName, serviceScannerBean);
 
       for (PropertyResourceConfigurer prc : prcs.values()) {
         prc.postProcessBeanFactory(factory);
       }
 
-      PropertyValues values = mapperScannerBean.getPropertyValues();
+      PropertyValues values = serviceScannerBean.getPropertyValues();
 
       this.basePackage = updatePropertyValue("basePackage", values);
     }

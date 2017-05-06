@@ -1,8 +1,9 @@
 package com.zrk1000.demo.configuration;
 
 
+import com.zrk1000.proxy.ServiceImplFactory;
 import com.zrk1000.proxy.annotation.ServiceScan;
-import com.zrk1000.proxy.bolt.SpringDispatchBolt;
+import com.zrk1000.proxy.bolt.ConfigBoltHandle;
 import com.zrk1000.proxy.rpc.RpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormRemoteDrpcHandle;
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +31,14 @@ public class StormConfig {
     @Scope("singleton")
     @Bean("stormDrpcHandle")
     public RpcHandle getStormLocalRpcHandle(){
-        StormLocalDrpcHandle drpcHandle = new StormLocalDrpcHandle(SpringDispatchBolt.class);
+        StormLocalDrpcHandle drpcHandle = null;
+        try {
+            Set<String> serviceImpls = ServiceImplFactory.loadServiceImpls();
+            ConfigBoltHandle configBoltHandle = new ConfigBoltHandle(serviceImpls);
+            drpcHandle = new StormLocalDrpcHandle(configBoltHandle);
+        } catch (IOException e) {
+            throw new RuntimeException("初始化stormDrpcHandle失败");
+        }
         return  drpcHandle;
     }
 

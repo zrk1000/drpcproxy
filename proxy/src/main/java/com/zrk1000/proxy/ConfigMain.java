@@ -1,6 +1,7 @@
 package com.zrk1000.proxy;
 
-import com.zrk1000.proxy.bolt.ConfigDispatchBolt;
+import com.zrk1000.proxy.bolt.ConfigBoltHandle;
+import com.zrk1000.proxy.bolt.DispatchBolt;
 import com.zrk1000.proxy.config.ExtendProperties;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by zrk-PC on 2017/4/13.
@@ -44,14 +46,13 @@ public class ConfigMain {
                     topologyName = args[1];
                 }
             }
-            ConfigDispatchBolt configDispatchBolt = new ConfigDispatchBolt();
-            configDispatchBolt.init(serviceImpls);
+            DispatchBolt dispatchBolt = new DispatchBolt(new ConfigBoltHandle(Arrays.asList(serviceImpls)));
 
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();
             DRPCSpout drpcSpout = new DRPCSpout(drpcSpoutName);
             builder.setSpout("drpcSpout", drpcSpout, spoutNum);
-            builder.setBolt("dispatch",configDispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
+            builder.setBolt("dispatch",dispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
             builder.setBolt("return", new ReturnResults(), resultBoltNum).shuffleGrouping("dispatch");
             StormSubmitter.submitTopologyWithProgressBar(topologyName, config, builder.createTopology());
         } catch (AlreadyAliveException e) {
