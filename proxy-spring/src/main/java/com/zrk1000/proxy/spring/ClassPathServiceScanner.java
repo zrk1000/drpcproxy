@@ -51,6 +51,8 @@ public class ClassPathServiceScanner extends ClassPathBeanDefinitionScanner {
 
   private String rpcHandleBeanName;
 
+  private Class<?>[] excludeClasses;
+
   private ServiceFactoryBean<?> serviceFactoryBean = new ServiceFactoryBean<Object>();
 
   public ClassPathServiceScanner(BeanDefinitionRegistry registry) {
@@ -88,6 +90,20 @@ public class ClassPathServiceScanner extends ClassPathBeanDefinitionScanner {
       });
       acceptAllInterfaces = false;
     }
+    if(excludeClasses!=null){
+      addExcludeFilter(new TypeFilter() {
+        public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
+          for(Class<?> clazz : excludeClasses){
+            String className = metadataReader.getClassMetadata().getClassName();
+            if(clazz.getName().equals(className)){
+              return true;
+            }
+          }
+          return false;
+        }
+      });
+    }
+
 
     if (acceptAllInterfaces) {
       // default include filter that accepts all classes
@@ -198,6 +214,14 @@ public class ClassPathServiceScanner extends ClassPathBeanDefinitionScanner {
 
   public void setRpcHandle(RpcHandle rpcHandle) {
     this.rpcHandle = rpcHandle;
+  }
+
+  public Class<?>[] getExcludeClasses() {
+    return excludeClasses;
+  }
+
+  public void setExcludeClasses(Class<?>[] excludeClasses) {
+    this.excludeClasses = excludeClasses;
   }
 
   public String getRpcHandleBeanName() {

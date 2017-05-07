@@ -70,6 +70,8 @@ public class ServiceScannerRegistrar implements ImportBeanDefinitionRegistrar {
     for (Class<?> clazz : annoAttrs.getClassArray("basePackageClasses")) {
       basePackages.add(ClassUtils.getPackageName(clazz));
     }
+
+    scanner.setExcludeClasses(annoAttrs.getClassArray("excludeClasses"));
     scanner.registerFilters();
     scanner.doScan(StringUtils.toStringArray(basePackages));
   }

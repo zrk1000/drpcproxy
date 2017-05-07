@@ -1,7 +1,7 @@
 package com.zrk1000.proxy;
 
 import com.zrk1000.proxy.bolt.DispatchBolt;
-import com.zrk1000.proxy.bolt.SpringBoltHandler;
+import com.zrk1000.proxy.bolt.SpringBoltHandle;
 import com.zrk1000.proxy.config.ExtendProperties;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
@@ -45,7 +45,7 @@ public class SpringMain {
                     topologyName = args[1];
                 }
             }
-            DispatchBolt dispatchBolt = new DispatchBolt(new SpringBoltHandler(packages));
+            DispatchBolt dispatchBolt = new DispatchBolt(new SpringBoltHandle(packages));
 
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();

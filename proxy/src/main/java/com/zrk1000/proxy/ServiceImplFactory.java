@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServiceImplFactory {
 
     public enum DrpcPattern{
-        REMOTE,LOCAL,RELY;
+        REMOTE,LOCAL,RELY
     }
 
     private static RpcHandle rpcHandle = null;

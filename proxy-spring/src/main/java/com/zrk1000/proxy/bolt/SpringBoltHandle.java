@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by rongkang on 2017-05-06.
  */
-public class SpringBoltHandler extends AbsBoltHandle {
+public class SpringBoltHandle extends AbsBoltHandle {
 
     private Map<String,Class<?>> interfaceClassCache = new ConcurrentHashMap();
 
@@ -21,7 +21,7 @@ public class SpringBoltHandler extends AbsBoltHandle {
 
     private String[] basePackages;
 
-    public SpringBoltHandler(String[] basePackages) {
+    public SpringBoltHandle(String[] basePackages) {
         this.basePackages = basePackages;
     }
 

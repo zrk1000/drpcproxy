@@ -29,6 +29,8 @@ public @interface ServiceScan {
 
     Class<?> markerInterface() default Class.class;
 
+    Class<?>[] excludeClasses() default {};
+
     String rpcHandleBeanRef() ;
 
 

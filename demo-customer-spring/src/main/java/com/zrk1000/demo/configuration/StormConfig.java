@@ -3,7 +3,7 @@ package com.zrk1000.demo.configuration;
 
 import com.zrk1000.proxy.ServiceImplFactory;
 import com.zrk1000.proxy.annotation.ServiceScan;
-import com.zrk1000.proxy.bolt.ConfigBoltHandle;
+import com.zrk1000.proxy.bolt.SpringBoltHandle;
 import com.zrk1000.proxy.rpc.RpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormLocalDrpcHandle;
 import com.zrk1000.proxy.rpc.drpc.StormRemoteDrpcHandle;
@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +23,9 @@ import java.util.Set;
  */
 @Profile({"local","remote"})
 @Configuration
-@ServiceScan(basePackages = "com.zrk1000.demo.service",rpcHandleBeanRef="stormDrpcHandle")
+@ServiceScan(basePackages = "com.zrk1000.demo.service",
+//        excludeClasses = {UserService.class},
+        rpcHandleBeanRef="stormDrpcHandle")
 public class StormConfig {
 
     @Profile("local")
@@ -34,8 +35,8 @@ public class StormConfig {
         StormLocalDrpcHandle drpcHandle = null;
         try {
             Set<String> serviceImpls = ServiceImplFactory.loadServiceImpls();
-            ConfigBoltHandle configBoltHandle = new ConfigBoltHandle(serviceImpls);
-            drpcHandle = new StormLocalDrpcHandle(configBoltHandle);
+            SpringBoltHandle springBoltHandle = new SpringBoltHandle(serviceImpls.toArray(new String[serviceImpls.size()]));
+            drpcHandle = new StormLocalDrpcHandle(springBoltHandle);
         } catch (IOException e) {
             throw new RuntimeException("初始化stormDrpcHandle失败");
         }
