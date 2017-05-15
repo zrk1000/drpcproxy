@@ -1,5 +1,6 @@
 package com.zrk1000.proxy;
 
+import com.zrk1000.proxy.bolt.BoltHandle;
 import com.zrk1000.proxy.bolt.ConfigBoltHandle;
 import com.zrk1000.proxy.bolt.DispatchBolt;
 import com.zrk1000.proxy.config.ExtendProperties;
@@ -15,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Created by zrk-PC on 2017/4/13.
@@ -31,7 +35,9 @@ public class ConfigMain {
             pps.load( ConfigMain.class.getClassLoader().getResourceAsStream("drpcproxy-provider.properties"));
 
             String[] serviceImpls = pps.getStringArrayProperty("service.impls");
+
             String drpcSpoutName = pps.getProperty("drpc.spout.name");
+            String drpcBoltHandle = pps.getProperty("drpc.bolt.handle","com.zrk1000.proxy.bolt.ConfigBoltHandle");
             String topologyName = pps.getProperty("drpc.topology.name");
             int spoutNum = pps.getIntProperty("drpc.spout.num", 1);
             int dispatchBoltNum = pps.getIntProperty("drpc.dispatch.bolt.num", 1);
@@ -46,7 +52,11 @@ public class ConfigMain {
                     topologyName = args[1];
                 }
             }
-            DispatchBolt dispatchBolt = new DispatchBolt(new ConfigBoltHandle(Arrays.asList(serviceImpls)));
+            Class cls=Class.forName(drpcBoltHandle);  //import class
+            Constructor cst=cls.getConstructor(Collection.class); //get the constructor
+            BoltHandle boltHandle=(BoltHandle)cst.newInstance(Arrays.asList(serviceImpls)); //get a new instance
+
+            DispatchBolt dispatchBolt = new DispatchBolt(boltHandle);
 
             TopologyBuilder builder = new TopologyBuilder();
             Config config = new Config();
@@ -62,6 +72,16 @@ public class ConfigMain {
         } catch (AuthorizationException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (NoSuchMethodException e) {
+            logger.error(e.getMessage());
+        } catch (IllegalAccessException e) {
+            logger.error(e.getMessage());
+        } catch (InstantiationException e) {
+            logger.error(e.getMessage());
+        } catch (InvocationTargetException e) {
             logger.error(e.getMessage());
         }
 

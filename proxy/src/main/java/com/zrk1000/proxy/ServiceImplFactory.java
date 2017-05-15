@@ -1,5 +1,6 @@
 package com.zrk1000.proxy;
 
+import com.zrk1000.proxy.bolt.BoltHandle;
 import com.zrk1000.proxy.bolt.ConfigBoltHandle;
 import com.zrk1000.proxy.config.ExtendProperties;
 import com.zrk1000.proxy.proxy.ServiceProxyFactory;
@@ -10,11 +11,9 @@ import org.apache.storm.Config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,6 +38,7 @@ public class ServiceImplFactory {
             ExtendProperties pps = new ExtendProperties();
             pps.load( ConfigMain.class.getClassLoader().getResourceAsStream("drpcproxy-consumer.properties"));
             drpcPattern = pps.getProperty("drpc.pattern");
+            String drpcBoltHandle = pps.getProperty("drpc.bolt.handle","com.zrk1000.proxy.bolt.ConfigBoltHandle");
 
             if(DrpcPattern.REMOTE.toString().equalsIgnoreCase(drpcPattern)){
                 //获取Config配置
@@ -55,6 +55,9 @@ public class ServiceImplFactory {
             }else if(DrpcPattern.LOCAL.toString().equalsIgnoreCase(drpcPattern)){
                 //获取消费方service服务列表
                 Set<String> serviceImpls = loadServiceImpls();
+                Class cls=Class.forName(drpcBoltHandle);  //import class
+                Constructor cst=cls.getConstructor(Collection.class); //get the constructor
+                BoltHandle boltHandle=(BoltHandle)cst.newInstance(Arrays.asList(serviceImpls)); //get a new instance
                 rpcHandle = new StormLocalDrpcHandle(new ConfigBoltHandle(serviceImpls));
             }else if(DrpcPattern.RELY.toString().equalsIgnoreCase(drpcPattern)){
                 //获取消费方service服务列表
@@ -71,6 +74,8 @@ public class ServiceImplFactory {
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e){
             e.printStackTrace();
         }
 
