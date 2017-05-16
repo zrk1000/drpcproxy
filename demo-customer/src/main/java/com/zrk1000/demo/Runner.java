@@ -26,7 +26,7 @@ public class Runner {
 
         User user = null;
         try {
-            user = userService.getUser("tom1");
+            user = userService.getUser("tom");
             System.out.println("------------user:"+user.toString());
             testService.retunrVoid();
             testService.basedTypeParameter(1,2L,3D,true,(byte)5,'6',7.0F,(short)8);

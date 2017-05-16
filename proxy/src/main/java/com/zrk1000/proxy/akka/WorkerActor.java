@@ -1,11 +1,12 @@
 package com.zrk1000.proxy.akka;
 
-import akka.actor.ActorSystem;
+import akka.actor.Actor;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.japi.Creator;
 import com.alibaba.fastjson.JSON;
 import com.zrk1000.proxy.bolt.BoltHandle;
+import com.zrk1000.proxy.bolt.WrapTuple;
 import com.zrk1000.proxy.rpc.drpc.DrpcRequest;
 import com.zrk1000.proxy.rpc.drpc.DrpcResponse;
 import org.apache.storm.topology.BasicOutputCollector;
@@ -17,38 +18,30 @@ import org.slf4j.LoggerFactory;
 /**
  * Created with IntelliJ IDEA.
  * User: zrk-PC
- * Date: 2017/4/28
- * Time: 9:29
+ * Date: 2017/5/16
+ * Time: 18:12
  */
-public class AkkaActor extends UntypedActor {
+public class WorkerActor extends UntypedActor {
 
-    private static Logger logger = LoggerFactory.getLogger(AkkaActor.class);
+    private static Logger logger = LoggerFactory.getLogger(WorkerActor.class);
 
-    private BasicOutputCollector collector;
-    private BoltHandle boltHandle;
-
-    public static Props props(final BasicOutputCollector collector, final BoltHandle boltHandle) {
-        return Props.create(new Creator<AkkaActor>() {
-            public AkkaActor create() throws Exception {
-                return new AkkaActor(collector,boltHandle);
+    public static Props props() {
+        return Props.create(new Creator<Actor>() {
+            public Actor create() throws Exception {
+                return new WorkerActor();
             }
         });
-    }
-
-    public AkkaActor(BasicOutputCollector collector,BoltHandle boltHandle){
-        this.collector = collector;
-        this.boltHandle = boltHandle;
-
     }
 
     public void onReceive(Object message) throws Exception {
         if(logger.isDebugEnabled())
             logger.debug("do AkkaActor onReceive,message:{}",message);
-        Tuple tuple = (Tuple) message;
+        WrapTuple wrapTuple = (WrapTuple) message;
+        Tuple tuple = wrapTuple.getTuple();
         String param = tuple.getString(0);
         DrpcRequest request = JSON.parseObject(param,DrpcRequest.class);
-        DrpcResponse response = boltHandle.execute(request);
-        collector.emit(new Values(JSON.toJSONString(response), tuple.getValue(1)));
+        DrpcResponse response = wrapTuple.getBoltHandle().execute(request);
+        wrapTuple.getCollector().emit(new Values(JSON.toJSONString(response), tuple.getValue(1)));
         context().stop(self());
     }
 }

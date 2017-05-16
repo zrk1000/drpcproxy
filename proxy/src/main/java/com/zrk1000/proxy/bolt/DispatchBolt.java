@@ -2,7 +2,7 @@ package com.zrk1000.proxy.bolt;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import com.zrk1000.proxy.akka.AkkaActor;
+import com.zrk1000.proxy.akka.MasterActor;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -17,8 +17,9 @@ import java.util.Map;
  */
 public class DispatchBolt extends BaseBasicBolt{
 
-    public static ActorSystem actorSystem = ActorSystem.create("actorSystem");
+    public static ActorSystem actorSystem ;
     public BoltHandle boltHandle;
+    public ActorRef masterActorRef;
 
     public DispatchBolt(BoltHandle boltHandle) {
         this.boltHandle = boltHandle;
@@ -28,12 +29,13 @@ public class DispatchBolt extends BaseBasicBolt{
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         super.prepare(stormConf,context);
+        actorSystem = ActorSystem.create("actorSystem");
+        masterActorRef = actorSystem.actorOf(MasterActor.props());
         boltHandle.prepare();
     }
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-        ActorRef actorRef = actorSystem.actorOf(AkkaActor.props(collector,boltHandle));
-        actorRef.tell(tuple,null);
+        masterActorRef.tell(new WrapTuple(tuple,collector,boltHandle), null);
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
