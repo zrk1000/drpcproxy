@@ -11,10 +11,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +29,11 @@ import java.util.List;
  * Date: 2017/5/2
  * Time: 18:02
  */
-@ContextConfiguration(classes = ApplicationConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = ApplicationConfig.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
+@Transactional
+@SpringBootTest
 public class GroupTest {
 
     @Autowired
@@ -34,8 +42,15 @@ public class GroupTest {
     @Autowired
     private UserRepository userRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    JpaProperties  jpaProperties;
+
     @Test
     public void insert(){
+
         List<User> users = new ArrayList<User>();
 
         Group group = new Group();
