@@ -1,5 +1,6 @@
 # DRPC-Proxy 简介
 DRPC-Proxy是基于使用storm的DRPC做RPC服务，解耦业务代码与storm框架代码的微框架；在使用某些场景下，有使用DRPC但不注重使用storm的流式计算的需求，通常情况下使用DRPCServer做为服务提供方接收请求，bolt中处理业务，ReturnResults返回结果，势必在bolt中会将业务代码与storm代码交织、耦合，为后期升级、重构、扩展留下难题。DRPC-Proxy是提供解耦的框架，服务消费方使用动态代理生调用DRPCClient与DRPCServer通讯，DRPCServer将请求匹配到对于的服务提供方的实现，最终结果由DRPCServer返回给消费方。
+
 ### DRPC-Proxy 特点
 * 解耦storm与业务代码，开发过程中对storm无感知
 * 使用简单，导入jar包，properties中添加相关服务的配置，pom.xml中添加依赖及profile
@@ -106,10 +107,6 @@ drpc.pattern=${profiles.pattern}
 ```
  public interface UserService {
     UserDto getUser(Long id);
-    UserDto getUserByName(String name);
-    List<UserDto> getUsers(String name);
-    List<UserDto> getUsersByGroup(Long groupId);
-    Integer getCount();
 }
 ```
 ### 服务提供者
@@ -123,37 +120,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUser(Long id) {
         return convert(userRepository.findOne(id));
     }
-    public UserDto getUserByName(String name) {
-        return convert(userRepository.findTopByName(name));
-    }
-    public List<UserDto> getUsers(String name) {
-        if(name==null)
-            return converts(userRepository.findAll());
-        return converts(userRepository.findByName(name));
-    }
-    public List<UserDto> getUsersByGroup(Long groupId) {
-        return converts(userRepository.findTopByGroupId(groupId));
-    }
-    public Integer getCount() {
-        return userRepository.countBy();
-    }
-    //转换为dto
-    private UserDto convert(User user){
-        UserDto dto = null;
-        if(user!=null){
-            dto = new UserDto();
-            BeanUtils.copyProperties(user,dto);
-        }
-        return dto;
-    }
-    //转换为List<dto>
-    private List<UserDto> converts(List<User> users){
-        List<UserDto> userDtos = new ArrayList<UserDto>();
-        if(users!=null)
-            for (User user : users)
-                userDtos.add(convert(user));
-        return userDtos;
-    }
+   
 }
 ```
 #### drpcproxy-provider.properties
@@ -184,27 +151,6 @@ public class UserController {
     public UserDto getUser(@PathVariable("id") Long id){
         return userService.getUser(id);
     }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public UserDto getUser(@RequestParam(required = true) String name){
-        return userService.getUserByName(name);
-    }
-
-    @RequestMapping(value="/list",method = RequestMethod.GET)
-    public List<UserDto> getUsers(@RequestParam(required = false) String name){
-        return userService.getUsers(name);
-    }
-
-    @RequestMapping(value="/group",method = RequestMethod.GET)
-    public List<UserDto> getUsers(@RequestParam(required = false) Long groupId){
-        return userService.getUsersByGroup(groupId);
-    }
-
-    @RequestMapping(value="/count",method = RequestMethod.GET)
-    public Integer count(){
-        return userService.getCount();
-    }
-
 }
 ```
 #### drpcproxy-consumer.properties
@@ -217,8 +163,6 @@ drpc.client.config.drpc.max_buffer_size=104857600
 drpc.client.host=192.168.1.81
 drpc.client.port=3772
 drpc.client.timeout=5000
-
-
 
 topology.mapping.config.zrk1000-service-provider-spring=\
 #  com.zrk1000.demo.service.GroupService,\
@@ -248,21 +192,18 @@ public class StormConfig {
         }
         return  drpcHandle;
     }
-
+    
     @Bean
     @ConfigurationProperties("drpc.client")
     public DrpcClientConfig getDrpcClientConfig(){
         return new DrpcClientConfig();
     }
-
+    
     @Bean
     @ConfigurationProperties("topology.mapping")
     public TopologyMapping getTopologyMapping(){
         return new TopologyMapping();
     }
-
-
-
 
     @Profile("remote")
     @Bean("stormDrpcHandle")
