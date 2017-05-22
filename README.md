@@ -27,6 +27,77 @@ demo-serviceimpl : 服务提供者
 
 demo-serviceimpl-spring : spring环境服务提供者
 
+### 用法
 
+* 服务接口API
+```
+ public interface UserService {
+    User getUser(String name) throws MyException;
+}
+```
+* 服务提供者
+```
+public class UserServiceImpl implements UserService {
+    public User getUser(String name) throws MyException{
+        User user = new User();
+        if("tom".equals(name)){
+            user.setAge(12);
+            user.setId(111L);
+            user.setName("tom");
+        }else {
+            throw new MyOnlyException("业务异常");
+        }
+        return user;
+    }
+```
+* drpcproxy-provider.properties
+```
+service.impls=\
+#  com.zrk1000.demo.serviceimpl.TestServiceImpl,\
+  com.zrk1000.demo.serviceimpl.UserServiceImpl
+drpc.spout.num=1
+drpc.dispatch.bolt.num=1
+drpc.result.bolt.num=1
+drpc.spout.name=spout_name
+drpc.topology.name=topology_name
+```
+* 启动脚本
+```
+storm jar provider.jar  com.zrk1000.proxy.SpringMain drpcSpoutName topologyName
+```
+* 服务消费者
+```
+public class Runner {
+  public static void main(String[] args) {
+      ServiceImplFactory.init();
+      UserService userService = ServiceImplFactory.newInstance(UserService.class);
+      User user = userService.getUser("tom");
+      System.out.println("------------user:"+user.toString());
+  }
+}
+```
+* drpcproxy-consumer.properties
+```
+drpc.client.config.storm.thrift.transport=org.apache.storm.security.auth.SimpleTransportPlugin
+drpc.client.config.storm.nimbus.retry.times=3
+drpc.client.config.storm.nimbus.retry.interval.millis=10000
+drpc.client.config.storm.nimbus.retry.intervalceiling.millis=60000
+drpc.client.config.drpc.max_buffer_size=104857600
+drpc.client.host=192.168.1.81
+drpc.client.port=3772
+drpc.client.timeout=50000
+
+topology.mapping.config.zrk1000-service-provider=\
+#    com.zrk1000.demo.service.TestService,\
+    com.zrk1000.demo.service.UserService
+
+#topology.mapping.config.zrk1000-service-provider-spring=\
+#    com.zrk1000.demo.service.UserService
+
+#remote,local,rely
+drpc.pattern=${profiles.pattern}
+
+
+```
 
 
