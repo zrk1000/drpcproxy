@@ -4,6 +4,7 @@ DRPC-Proxy是基于使用storm的DRPC做RPC服务，解耦业务代码与storm�
 * 解耦storm与业务代码，开发过程中对storm无感知
 * 使用简单，导入jar包，properties中添加相关服务的配置，pom.xml中添加依赖及profile
 * 支持三种模式开发，脱离storm进行业务开发-rely模式，LocalDRPC模式，Remote模式
+* 提供spring环境下的支持，无spring亦可
 * 异常可远程抛出
 * 对DRPC无封装，使用原生代码调用
 * 集成AKKA，保证单线程下bolt对高并发的支持
