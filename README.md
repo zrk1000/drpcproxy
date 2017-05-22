@@ -27,15 +27,15 @@ demo-serviceimpl : 服务提供者
 
 demo-serviceimpl-spring : spring环境服务提供者
 
-### 用法
+### 用法1(非spring环境)
 
-* 服务接口API
+### 服务接口API
 ```
  public interface UserService {
     User getUser(String name) throws MyException;
 }
 ```
-* 服务提供者
+### 服务提供者
 ```
 public class UserServiceImpl implements UserService {
     public User getUser(String name) throws MyException{
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 ```
-* drpcproxy-provider.properties
+#### drpcproxy-provider.properties
 ```
 service.impls=\
 #  com.zrk1000.demo.serviceimpl.TestServiceImpl,\
@@ -61,11 +61,11 @@ drpc.result.bolt.num=1
 drpc.spout.name=spout_name
 drpc.topology.name=topology_name
 ```
-* 启动脚本
+#### 启动脚本
 ```
-storm jar provider.jar  com.zrk1000.proxy.SpringMain drpcSpoutName topologyName
+storm jar provider.jar  com.zrk1000.proxy.ConfigMain drpcSpoutName topologyName
 ```
-* 服务消费者
+### 服务消费者
 ```
 public class Runner {
   public static void main(String[] args) {
@@ -76,7 +76,7 @@ public class Runner {
   }
 }
 ```
-* drpcproxy-consumer.properties
+#### drpcproxy-consumer.properties
 ```
 drpc.client.config.storm.thrift.transport=org.apache.storm.security.auth.SimpleTransportPlugin
 drpc.client.config.storm.nimbus.retry.times=3
@@ -98,6 +98,194 @@ topology.mapping.config.zrk1000-service-provider=\
 drpc.pattern=${profiles.pattern}
 
 
+```
+
+### 用法2(spring环境-springboot)
+
+### 服务接口API
+```
+ public interface UserService {
+    UserDto getUser(Long id);
+    UserDto getUserByName(String name);
+    List<UserDto> getUsers(String name);
+    List<UserDto> getUsersByGroup(Long groupId);
+    Integer getCount();
+}
+```
+### 服务提供者
+```
+@Service
+@Transactional
+public class UserServiceImpl implements UserService {
+    @Autowired
+    private UserRepository userRepository;
+    
+    public UserDto getUser(Long id) {
+        return convert(userRepository.findOne(id));
+    }
+    public UserDto getUserByName(String name) {
+        return convert(userRepository.findTopByName(name));
+    }
+    public List<UserDto> getUsers(String name) {
+        if(name==null)
+            return converts(userRepository.findAll());
+        return converts(userRepository.findByName(name));
+    }
+    public List<UserDto> getUsersByGroup(Long groupId) {
+        return converts(userRepository.findTopByGroupId(groupId));
+    }
+    public Integer getCount() {
+        return userRepository.countBy();
+    }
+    //转换为dto
+    private UserDto convert(User user){
+        UserDto dto = null;
+        if(user!=null){
+            dto = new UserDto();
+            BeanUtils.copyProperties(user,dto);
+        }
+        return dto;
+    }
+    //转换为List<dto>
+    private List<UserDto> converts(List<User> users){
+        List<UserDto> userDtos = new ArrayList<UserDto>();
+        if(users!=null)
+            for (User user : users)
+                userDtos.add(convert(user));
+        return userDtos;
+    }
+}
+```
+#### drpcproxy-provider.properties
+```
+#业务所在的包名，使用AnnotationConfigApplicationContext创建spring上下文环境 ，建议使用springboot，可支持基于xml构建上下文
+service.impls=com.zrk1000.demo
+drpc.spout.num=1
+drpc.dispatch.bolt.num=1
+drpc.result.bolt.num=1
+drpc.spout.name=spout_name
+drpc.topology.name=topology_name
+
+
+```
+#### 启动脚本
+```
+storm jar provider.jar  com.zrk1000.proxy.SpringMain drpcSpoutName topologyName
+```
+### 服务消费者
+```
+@RestController
+@RequestMapping("user")
+public class UserController {
+    @Autowired
+    private UserService userService;
+
+    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
+    public UserDto getUser(@PathVariable("id") Long id){
+        return userService.getUser(id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public UserDto getUser(@RequestParam(required = true) String name){
+        return userService.getUserByName(name);
+    }
+
+    @RequestMapping(value="/list",method = RequestMethod.GET)
+    public List<UserDto> getUsers(@RequestParam(required = false) String name){
+        return userService.getUsers(name);
+    }
+
+    @RequestMapping(value="/group",method = RequestMethod.GET)
+    public List<UserDto> getUsers(@RequestParam(required = false) Long groupId){
+        return userService.getUsersByGroup(groupId);
+    }
+
+    @RequestMapping(value="/count",method = RequestMethod.GET)
+    public Integer count(){
+        return userService.getCount();
+    }
+
+}
+```
+#### drpcproxy-consumer.properties
+```
+drpc.client.config.storm.thrift.transport=org.apache.storm.security.auth.SimpleTransportPlugin
+drpc.client.config.storm.nimbus.retry.times=3
+drpc.client.config.storm.nimbus.retry.interval.millis=10000
+drpc.client.config.storm.nimbus.retry.intervalceiling.millis=60000
+drpc.client.config.drpc.max_buffer_size=104857600
+drpc.client.host=192.168.1.81
+drpc.client.port=3772
+drpc.client.timeout=5000
+
+
+
+topology.mapping.config.zrk1000-service-provider-spring=\
+#  com.zrk1000.demo.service.GroupService,\
+  com.zrk1000.demo.service.UserService
+
+```
+#### StormConfig
+```
+@Profile({"local","remote"})
+@Configuration
+@ServiceScan(basePackages = "com.zrk1000.demo.service",
+//        excludeClasses = {UserService.class},
+        rpcHandleBeanRef="stormDrpcHandle")
+public class StormConfig {
+
+    @Profile("local")
+    @Scope("singleton")
+    @Bean("stormDrpcHandle")
+    public RpcHandle getStormLocalRpcHandle(){
+        StormLocalDrpcHandle drpcHandle = null;
+        try {
+            Set<String> serviceImpls = ServiceImplFactory.loadServiceImpls();
+            SpringBoltHandle springBoltHandle = new SpringBoltHandle(serviceImpls.toArray(new String[serviceImpls.size()]));
+            drpcHandle = new StormLocalDrpcHandle(springBoltHandle);
+        } catch (IOException e) {
+            throw new RuntimeException("初始化stormDrpcHandle失败");
+        }
+        return  drpcHandle;
+    }
+
+    @Bean
+    @ConfigurationProperties("drpc.client")
+    public DrpcClientConfig getDrpcClientConfig(){
+        return new DrpcClientConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties("topology.mapping")
+    public TopologyMapping getTopologyMapping(){
+        return new TopologyMapping();
+    }
+
+
+
+
+    @Profile("remote")
+    @Bean("stormDrpcHandle")
+    public RpcHandle getStormRemoteRpcHandle(DrpcClientConfig clientConfig,TopologyMapping topologyMapping){
+        Config config = new Config();
+        config.putAll(clientConfig.getConfig());
+        return  new StormRemoteDrpcHandle(config,clientConfig.getHost(),clientConfig.getPort(),clientConfig.getTimeout(),topologyMapping.getConfig());
+    }
+    
+    class DrpcClientConfig{
+        private String host;
+        private Integer port;
+        private Integer timeout;
+        private Map<String,String> config ;
+        //getter setter
+    }
+
+    class TopologyMapping {
+        Map<String, Set<String>> config;
+        //getter setter
+    }
+
+}
 ```
 
 
