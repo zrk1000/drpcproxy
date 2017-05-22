@@ -8,7 +8,7 @@ DRPC-Proxy是基于使用storm的DRPC做RPC服务，解耦业务代码与storm�
 * 对DRPC无封装，使用原生代码调用
 * 集成AKKA，保证单线程下bolt对高并发的支持
 
-### odule说明：
+### Module 说明
 
 proxy : 基于接口的drpc调用
 
