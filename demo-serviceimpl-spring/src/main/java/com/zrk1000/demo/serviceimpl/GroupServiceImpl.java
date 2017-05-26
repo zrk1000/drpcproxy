@@ -34,6 +34,8 @@ public class GroupServiceImpl implements GroupService{
     private UserRepository userRepository;
 
     public GroupDto getGroup(Long id) {
+        if(id<0)
+            throw new RuntimeException("参数错误");
         return convert(groupRepository.findOne(id));
     }
 
