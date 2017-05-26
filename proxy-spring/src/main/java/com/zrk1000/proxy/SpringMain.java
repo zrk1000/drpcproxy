@@ -26,6 +26,7 @@ public class SpringMain {
     public static void main(String[] args) {
 
         try {
+            logger.info("加载配置文件......");
             ExtendProperties pps = new ExtendProperties();
             pps.load( SpringMain.class.getClassLoader().getResourceAsStream("drpcproxy-provider.properties"));
 
@@ -45,6 +46,10 @@ public class SpringMain {
                     topologyName = args[1];
                 }
             }
+            logger.info("配置文件加载完成，packages：{}，drpcSpoutName：{}，topologyName：{}，spoutNum：{}，dispatchBoltNum：{}，resultBoltNum：{}",
+                    packages,drpcSpoutName,topologyName,spoutNum,dispatchBoltNum,resultBoltNum);
+            logger.info("构建topology");
+
             DispatchBolt dispatchBolt = new DispatchBolt(new SpringBoltHandle(packages));
 
             TopologyBuilder builder = new TopologyBuilder();
@@ -53,7 +58,9 @@ public class SpringMain {
             builder.setSpout("drpcSpout", drpcSpout, spoutNum);
             builder.setBolt("dispatch", dispatchBolt ,dispatchBoltNum) .shuffleGrouping("drpcSpout");
             builder.setBolt("return", new ReturnResults(), resultBoltNum).shuffleGrouping("dispatch");
+            logger.info("构建topology完毕，提交jar");
             StormSubmitter.submitTopologyWithProgressBar(topologyName, config, builder.createTopology());
+            logger.info("提交jar完成");
         } catch (AlreadyAliveException e) {
             logger.error(e.getMessage());
         } catch (InvalidTopologyException e) {

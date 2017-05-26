@@ -75,7 +75,7 @@
                 </dependency>
             </dependencies>
             <build>
-                <finalName>service-provider</finalName>
+                <finalName>service-provider-spring</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
@@ -146,7 +146,7 @@
                 </dependency>
             </dependencies>
             <build>
-                <finalName>service-provider</finalName>
+                <finalName>service-provider-spring</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>

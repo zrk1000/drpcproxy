@@ -34,7 +34,7 @@ public interface UserRepository  extends JpaRepository<User,Long> {
      * @param groupId
      * @return
      */
-    List<User> findTopByGroupId(Long groupId);
+    List<User> findByGroupId(Long groupId);
 
 
     /**

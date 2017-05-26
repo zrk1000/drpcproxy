@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<UserDto> getUsersByGroup(Long groupId) {
-        return converts(userRepository.findTopByGroupId(groupId));
+        return converts(userRepository.findByGroupId(groupId));
     }
 
     public Integer getCount() {
