@@ -71,8 +71,9 @@ public class ServiceImplFactory {
                         throw new RuntimeException("Unable to find the class \""+serviceImpl+"\"");
                     }
                 }
+            }else{
+                throw new RuntimeException("The drpc.pattern parameter cannot be empty");
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e){

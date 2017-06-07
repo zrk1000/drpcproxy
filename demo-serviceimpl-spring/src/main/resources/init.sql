@@ -7,3 +7,11 @@
 -- INSERT INTO GROUP(id,`name`,age)VALUES(2,'administrator',26)
 -- INSERT INTO GROUP(id,`name`,age)VALUES(3,'tom',21)
 -- INSERT INTO GROUP(id,`name`,age)VALUES(4,'小红',20)
+
+-- CREATE TABLE USER{
+--   id INTEGER ,
+--   `name` varchar(255),
+--   age INT
+-- };
+--
+-- COMMIT ;

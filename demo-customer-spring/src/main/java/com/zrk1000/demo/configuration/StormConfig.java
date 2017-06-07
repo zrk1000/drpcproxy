@@ -43,12 +43,6 @@ public class StormConfig {
         return  drpcHandle;
     }
 
-//    @Bean
-//    @ConfigurationProperties("pool.config")
-//    public GenericObjectPoolConfig getGenericObjectPoolConfig(){
-//        return new GenericObjectPoolConfig();
-//    }
-
     @Bean
     @ConfigurationProperties("drpc.client")
     public DrpcClientConfig getDrpcClientConfig(){
@@ -62,8 +56,6 @@ public class StormConfig {
     }
 
 
-
-
     @Profile("remote")
     @Bean("stormDrpcHandle")
     public RpcHandle getStormRemoteRpcHandle(DrpcClientConfig clientConfig,TopologyMapping topologyMapping){
@@ -72,13 +64,6 @@ public class StormConfig {
         return  new StormRemoteDrpcHandle(config,clientConfig.getHost(),clientConfig.getPort(),clientConfig.getTimeout(),topologyMapping.getConfig());
     }
 
-//    @Profile("remote")
-//    @Bean("stormDrpcHandle")
-//    public RpcHandle getStormRemoteRpcHandle(GenericObjectPoolConfig poolConfig,DrpcClientConfig clientConfig,TopologyMapping spoutMapping){
-//        Config config = new Config();
-//        config.putAll(clientConfig.getConfig());
-//        return  new StormRemoteDrpcHandle(config,clientConfig.getHost(),clientConfig.getPort(),clientConfig.getTimeout(),poolConfig,spoutMapping.getConfig());
-//    }
 
     class DrpcClientConfig{
         private String host;

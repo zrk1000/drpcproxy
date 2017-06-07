@@ -1,7 +1,6 @@
 package com.zrk1000.proxy;
 
 import com.zrk1000.proxy.bolt.BoltHandle;
-import com.zrk1000.proxy.bolt.ConfigBoltHandle;
 import com.zrk1000.proxy.bolt.DispatchBolt;
 import com.zrk1000.proxy.config.ExtendProperties;
 import org.apache.storm.Config;

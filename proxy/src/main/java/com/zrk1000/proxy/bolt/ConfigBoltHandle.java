@@ -14,13 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConfigBoltHandle  extends AbsBoltHandle{
 
-    private Map<String,Class<?>> serviceImplsMap ;
+    private Map<String,Object> serviceImplsMap ;
 
     private Collection<String> serviceImpls;
 
     public ConfigBoltHandle(Collection<String> serviceImpls) {
         if(serviceImpls==null || serviceImpls.size() == 0)
-            throw new RuntimeException("\"service.impls\" are not empty");
+            throw new RuntimeException(" Parameter 'service.impls' cannot be empty");
         this.serviceImpls = serviceImpls;
         this.serviceImplsMap = new ConcurrentHashMap();
     }
@@ -30,9 +30,13 @@ public class ConfigBoltHandle  extends AbsBoltHandle{
             try {
                 Class<?> serviceImplClass = Class.forName(serviceImpl);
                 for (Class<?> _interface:serviceImplClass.getInterfaces() )
-                    serviceImplsMap.put(_interface.getCanonicalName(),serviceImplClass);
+                    serviceImplsMap.put(_interface.getCanonicalName(),serviceImplClass.newInstance());
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Unable to find the class \""+serviceImpl+"\"");
+            } catch (InstantiationException e) {
+                throw new RuntimeException("Unable to init the class \""+serviceImpl+"\"");
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to init the class \""+serviceImpl+"\"");
             }
 
         }
@@ -42,14 +46,12 @@ public class ConfigBoltHandle  extends AbsBoltHandle{
         DrpcResponse response = new DrpcResponse();
         response.setCode(200);
         response.setMsg("success");
-        Object result = null;
         try {
-            Class<?> serviceImpl = serviceImplsMap.get(request.getInterfaceClazz());
+            Object serviceImpl = serviceImplsMap.get(request.getInterfaceClazz());
             if(serviceImpl == null)
                 throw  new ClassNotFoundException("Unable to find the class" + request.getInterfaceClazz() );
-            Object impl = serviceImpl.newInstance();
             Method method = getMethod(request);
-            result = invoke(impl, method, request.getParams());
+            Object result = invoke(serviceImpl, method, request.getParams());
             response.setData(result);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -66,11 +68,6 @@ public class ConfigBoltHandle  extends AbsBoltHandle{
             response.setMsg(e.getMessage());
             response.setException(e.getTargetException());
             response.setCode(500);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-            response.setException(e);
-            response.setMsg(e.getMessage());
-            response.setCode(405);
         }
         return response;
     }

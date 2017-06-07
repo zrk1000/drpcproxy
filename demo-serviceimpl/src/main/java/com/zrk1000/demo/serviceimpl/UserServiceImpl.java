@@ -26,7 +26,8 @@ public class UserServiceImpl implements UserService {
             user.setName("tom");
 
         }else {
-            throw new MyOnlyException("业务异常");
+//            throw new MyOnlyException("业务异常");
+            throw new BizException(1,"业务异常");
         }
         return user;
     }
