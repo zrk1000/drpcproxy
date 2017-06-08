@@ -53,6 +53,9 @@
     <profiles>
         <profile>
             <id>pattern-local</id>
+            <properties>
+                <profiles.pattern>local</profiles.pattern>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.storm</groupId>
@@ -80,6 +83,10 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <filtering>true</filtering>
+                        <includes>
+                            <include>*.*</include>
+                            <include>*.*</include>
+                        </includes>
                     </resource>
                 </resources>
                 <plugins>
@@ -92,6 +99,9 @@
         </profile>
         <profile>
             <id>pattern-remote</id>
+            <properties>
+                <profiles.pattern>remote</profiles.pattern>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.storm</groupId>
@@ -115,11 +125,14 @@
                 </dependency>
             </dependencies>
             <build>
-                <finalName>service-provider</finalName>
+                <finalName>service-provider-spring</finalName>
                 <resources>
                     <resource>
                         <directory>src/main/resources</directory>
                         <filtering>true</filtering>
+                        <includes>
+                            <include>*.*</include>
+                        </includes>
                     </resource>
                 </resources>
                 <plugins>
@@ -132,6 +145,9 @@
         </profile>
         <profile>
             <id>pattern-rely</id>
+            <properties>
+                <profiles.pattern>rely</profiles.pattern>
+            </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -169,6 +185,28 @@
                     </resource>
                 </resources>
             </build>
+        </profile>
+
+        <profile>
+            <id>env-dev</id>
+            <properties>
+                <profiles.env>dev</profiles.env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>env-test</id>
+            <properties>
+                <profiles.env>test</profiles.env>
+            </properties>
+        </profile>
+        <profile>
+            <id>env-prod</id>
+            <properties>
+                <profiles.env>prod</profiles.env>
+            </properties>
         </profile>
     </profiles>
 
