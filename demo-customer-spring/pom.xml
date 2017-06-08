@@ -58,6 +58,21 @@
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <finalName>service-customer-spring</finalName>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>pattern-remote</id>
@@ -71,6 +86,21 @@
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <finalName>service-customer-spring</finalName>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>pattern-rely</id>
@@ -87,7 +117,98 @@
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <finalName>service-customer-spring</finalName>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                        <excludes>
+                            <exclude>application-${profiles.env}.properties</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.polago.maven.plugins</groupId>
+                        <artifactId>merge-properties-maven-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>merge-application-env</id>
+                                <goals>
+                                    <goal>merge</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                    <outputFile>application-${profiles.env}.properties</outputFile>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/resources</directory>
+                                            <filtering>true</filtering>
+                                            <includes>
+                                                <include>application-${profiles.env}.properties</include>
+                                            </includes>
+                                        </resource>
+                                        <resource>
+                                            <directory>../demo-serviceimpl-spring/src/main/resources</directory>
+                                            <filtering>true</filtering>
+                                            <includes>
+                                                <include>application-${profiles.env}.properties</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-resources-plugin</artifactId>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>copy-resources</id>-->
+                                <!--&lt;!&ndash; 在default生命周期的 validate阶段就执行resources插件的copy-resources目标 &ndash;&gt;-->
+                                <!--<phase>validate</phase>-->
+                                <!--<goals>-->
+                                    <!--<goal>copy-resources</goal>-->
+                                <!--</goals>-->
+                                <!--<configuration>-->
+                                    <!--&lt;!&ndash; 指定resources插件处理资源文件到哪个目录下 &ndash;&gt;-->
+                                    <!--<outputDirectory>${project.build.outputDirectory}</outputDirectory>-->
+                                    <!--&lt;!&ndash;  也可以用下面这样的方式（指定相对url的方式指定outputDirectory）-->
+                                    <!--<outputDirectory>target/classes</outputDirectory>-->
+                                     <!--&ndash;&gt;-->
+                                    <!--&lt;!&ndash; 待处理的资源定义 &ndash;&gt;-->
+                                    <!--<resources>-->
+                                        <!--<resource>-->
+                                            <!--&lt;!&ndash; 指定resources插件处理哪个目录下的资源文件 &ndash;&gt;-->
+                                            <!--<directory>../demo-serviceimpl-spring/src/main/resources</directory>-->
+                                            <!--&lt;!&ndash; 指定不需要处理的资源-->
+                                            <!--<excludes>-->
+                                              <!--<exclude>WEB-INF/*.*</exclude>-->
+                                            <!--</excludes>-->
+                                            <!--&ndash;&gt;-->
+                                            <!--&lt;!&ndash; 是否对待处理的资源开启过滤模式 (resources插件的copy-resources目标也有资源过滤的功能，这里配置的-->
+                                            <!--这个功能的效果跟<build><resources><resource>下配置的资源过滤是一样的，只不过可能执行的阶段不一样，-->
+                                            <!--这里执行的阶段是插件指定的validate阶段，<build><resources><resource>下的配置将是在resources插件的resources目标执行时起作用（在process-resources阶段）)&ndash;&gt;-->
+                                            <!--<filtering>false</filtering>-->
+                                        <!--</resource>-->
+                                    <!--</resources>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+
+                    <!--</plugin>-->
+                </plugins>
+            </build>
         </profile>
+
         <profile>
             <id>env-dev</id>
             <properties>
@@ -112,19 +233,4 @@
     </profiles>
 
 
-    <build>
-        <finalName>web</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>
